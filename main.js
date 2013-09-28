@@ -305,7 +305,7 @@ function Particle(x, y, color, targetFish, dir, r) {
   this.r = r || 2
 }
 var fish = new Fish()
-var fish2 = new Fish(0, 200)
+var fish2 = new Fish(0, 200, 20)
 var fishes = [fish, fish2]
 var last = Date.now()
 var frame = 0
