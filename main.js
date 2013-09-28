@@ -4,7 +4,7 @@ $canv.height = 400
 $canv.style.backgroundColor = '#111'
 var ctx = $canv.getContext('2d')
 ctx.lineJoin = 'round'
-var debug = false //true
+var debug = true
 
                // blue        l blue        l green         orange         d orange
 var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
@@ -39,7 +39,6 @@ window.onkeydown = function(e){
 
   // add to front of input list
   input.unshift(k)
-  console.log(input)
 
   player.updateInput(input)
 }
@@ -67,7 +66,7 @@ function draw(t) {
 
   // physics
   for(var i=0; i<fishes.length; i++) {
-    fishes[i].physics()
+    fishes[i].physics(ossilation)
   }
 
   // collision
@@ -75,7 +74,7 @@ function draw(t) {
     var fish = fishes[i]
     for(var j=i+1; j<fishes.length; j++) {
       var fish2 = fishes[j]
-      if(fish.collide(fish2, ossilation)) {
+      if(fish.collide(fish2)) {
         fish2.kill(fish)
       }
     }
@@ -103,5 +102,5 @@ function draw(t) {
   frame++
 }
 
-//fishes.push(new Fish(100,100,40))
+fishes.push(new Fish(100,100,40))
 requestAnimationFrame(draw)

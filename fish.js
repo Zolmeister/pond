@@ -1,14 +1,16 @@
 function Fish(x, y, size, dir) {
   var randCol = randColor()
 
-  this.canv = document.createElement('canvas')
-  this.canv.width = $canv.width
-  this.canv.height = $canv.height
-  this.ctx = this.canv.getContext('2d')
-  this.dir = dir || Math.PI/2 // radians
+  this.dir = dir || Math.PI/4 // radians
   this.targetDir = dir
-  this.arcSpeed = 0.1
-  this.size = size || 10
+  this.arcSpeed = 0.05
+  this.size = size || 20
+
+  this.canv = document.createElement('canvas')
+  this.canv.width = this.size*5
+  this.canv.height = this.size*3
+  this.ctx = this.canv.getContext('2d')
+  this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
 
   // loaded percent is used for new colors that have been added and need to grow
   this.colors = [
@@ -31,48 +33,61 @@ function Fish(x, y, size, dir) {
 
   this.circles = [
     {
-      x: this.size / 5,
+      x: null,
+      y: null,
       r: this.size * 11/14
     },
     {
-      x: -this.size / 3,
+      x: null,
+      y: null,
       r: this.size * 12/15
     },
     {
-      x: -this.size,
+      x: null,
+      y: null,
       r: this.size * 10/15
     },
     {
-      x: -this.size * 1.6,
+      x: null,
+      y: null,
       r: this.size * 7/15
     },
     {
-      x: -this.size * 2.2,
+      x: null,
+      y: null,
       r: this.size * 4/14
     },
-    {
-      x: -this.size * 2.6,
+    /*{
+      x: null,
+      y: null,
       r: this.size * 3/13
-    },
+    },*/
     {
-      x: -this.size * 2.8,
+      x: null,
+      y: null,
       r: this.size * 3/15
     }
   ]
 
-  this.circleYOffsets = [
-    this.size/40, this.size/30, this.size/20, this.size/15, this.size/12, this.size/30, this.size/30
+  this.circleMap = [
+    [this.size/5, this.size/40],
+    [-this.size/3, this.size/30],
+    [-this.size, this.size/20],
+    [-this.size*1.6, this.size/15],
+    [-this.size*2.2, this.size/12],
+    [-this.size*2.8, -this.size/30]
   ]
 
 }
 Fish.prototype.draw = function(outputCtx, o) {
   if(this.dying) return this.drawDeath(outputCtx)
   var ctx = this.ctx
-  ctx.clearRect(0, 0, this.canv.width, this.canv.height)
+  ctx.fillStyle='#444'
+  ctx.clearRect(-this.canv.width, -this.canv.height, this.canv.width*2, this.canv.height*2)
   o = o || 0
   var fish = this
-  var x = fish.x
-  var y = fish.y
+  var x = 0
+  var y = 0
   var size = fish.size
 
   // main body
@@ -168,38 +183,40 @@ Fish.prototype.draw = function(outputCtx, o) {
     if (colorSize < 0) break
   }
 
+  outputCtx.save()
+  outputCtx.translate(this.x, this.y)
+  outputCtx.rotate(this.dir)
+  outputCtx.drawImage(this.canv, -this.canv.width/2 - size, -this.canv.height/2)
+  outputCtx.restore()
+
 
   // collision body
+  var ctx = outputCtx
+
   ctx.strokeStyle = '#0f0'
   ctx.fillStyle = '#0f0'
   ctx.lineWidth  = 2
   ctx.beginPath()
-  ctx.arc(x + size / 5  , y + size/40*o, size * (11/14), 0, 2 * Math.PI, false)
-  ctx.arc(x - size / 3  , y + size/30*o, size * (12/15), 0, 2 * Math.PI, false)
-  ctx.arc(x - size      , y + size/20*o, size * (10/15), 0, 2 * Math.PI, false)
-  ctx.arc(x - size * 1.6, y + size/15*o, size * (7/15) , 0, 2 * Math.PI, false)
-  ctx.arc(x - size * 2.2, y + size/12*o, size * (4/14) , 0, 2 * Math.PI, false)
-  ctx.arc(x - size * 2.6, y + size/30*o, size * (3/13) , 0, 2 * Math.PI, false)
-  ctx.arc(x - size * 2.8, y - size/30*o, size * (3/15) , 0, 2 * Math.PI, false)
-  //ctx.fill()
+  ctx.save()
+
+  for(var i=0;i<this.circles.length;i++) {
+    var cir = this.circles[i]
+
+    ctx.arc(cir.x, cir.y, cir.r, 0, 2 * Math.PI, false)
+  }
+
   if (debug) {
     ctx.stroke()
   }
   ctx.closePath()
-
-  outputCtx.save()
-  outputCtx.translate(-this.x/2, -this.y/2)
-  outputCtx.rotate(0.1)
-  outputCtx.drawImage(this.canv, 0, 0)
-  //outputCtx.translate(this.x, this.y)
-  outputCtx.restore()
+  ctx.restore()
 
 }
 Fish.prototype.drawDeath = function(outputCtx) {
-  var ctx = this.ctx
+  var ctx = outputCtx
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
   ctx.lineWidth = 1
-  ctx.clearRect(0, 0, this.canv.width, this.canv.height)
+  //ctx.clearRect(0, 0, this.canv.width, this.canv.height)
   for(var i=0;i<this.deathParticles.length;i++) {
     var p = this.deathParticles[i]
     ctx.beginPath()
@@ -208,27 +225,25 @@ Fish.prototype.drawDeath = function(outputCtx) {
     ctx.fill()
     ctx.stroke()
   }
-  outputCtx.drawImage(this.canv, 0, 0)
+  //outputCtx.drawImage(this.canv, 0, 0)
 }
-Fish.prototype.collide = function (fish, ossilation) {
-  ossilation = ossilation || 0
+Fish.prototype.collide = function (fish) {
 
   // the fish has been killed and is being removed
   if (this.dying || fish.dying) {
     return false
   }
 
-  // there are 7 circles that make up the collision box of each fish
+  // there are 6 circles that make up the collision box of each fish
   // check if they collide
   for (var i=0;i<this.circles.length;i++) {
     var c1 = this.circles[i]
-    var c1y = (this.circleYOffsets[i] + this.y) * ossilation
+
     for (var j=0;j<fish.circles.length;j++) {
       var c2 = fish.circles[j]
-      var c2y = (fish.circleYOffsets[j] + fish.y) * ossilation
 
       // check if they touch
-      if ( Math.pow((c2.x + fish.x) - (c1.x + this.x), 2) + Math.pow(c2y - c1y, 2) <= Math.pow(c2.r + c1.r, 2)) {
+      if ( Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2) <= Math.pow(c2.r + c1.r, 2)) {
         return true
       }
     }
@@ -256,7 +271,7 @@ Fish.prototype.kill = function(target) {
     this.deathParticles.push(new Particle(x, y, col, target, Math.PI*Math.random()*2 - Math.PI, this.size/20))
   }
 }
-Fish.prototype.physics = function(){
+Fish.prototype.physics = function(ossilation){
 
   // grow inner colors
   for(var i=0;i<this.colors.length;i++) {
@@ -312,6 +327,15 @@ Fish.prototype.physics = function(){
         this.dead = true
     }
   } else {
+    // update collision circles
+    for(var i=0;i<this.circles.length;i++) {
+      var cir = this.circles[i]
+      var relativePosition = this.circleMap[i]
+      var pos = rot(relativePosition[0], relativePosition[1]*ossilation, this.dir)
+      cir.x = pos[0] + this.x
+      cir.y = pos[1] + this.y
+    }
+
     // update accel
 
     // movement
@@ -359,7 +383,7 @@ Fish.prototype.physics = function(){
     }
     var inputDirection = this.input.slice(0,2).sort().join(' ')
     this.targetDir = dirMap[inputDirection]
-    console.log(this.targetDir)
+
 
     var isInput = this.input.length > 0 ? 1 : 0
     this.accel = [Math.cos(this.dir) * isInput, Math.sin(this.dir) * isInput]

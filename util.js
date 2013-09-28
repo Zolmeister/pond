@@ -35,3 +35,11 @@ function directionTowards(a, b) {
 function distance(a, b) {
   return Math.sqrt(Math.pow(a.x-b.x, 2) + Math.pow(a.y - b.y, 2))
 }
+
+function rot(x, y, dir) {
+  /*var rotationMatrix = [
+    [Math.cos(dir), -Math.sin(dir)],
+    [Math.sin(dir), Math.cos(dir)]
+  ]*/
+  return [Math.cos(dir)*x - Math.sin(dir)*y, Math.sin(dir)*x + Math.cos(dir)*y]
+}
