@@ -276,7 +276,7 @@ Fish.prototype.collide = function (fish, ossilation) {
 Fish.prototype.kill = function(target) {
   this.dying = true
   var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
-  for(var i = 0; i < pixels.length; i += 36) {
+  for(var i = 0; i < pixels.length; i += 36 ) {
     var r = pixels[i]
     var g = pixels[i + 1]
     var b = pixels[i + 2]
@@ -305,7 +305,7 @@ function Particle(x, y, color, targetFish, dir, r) {
   this.r = r || 2
 }
 var fish = new Fish()
-var fish2 = new Fish(200, 200)
+var fish2 = new Fish(0, 200)
 var fishes = [fish, fish2]
 var last = Date.now()
 var frame = 0
@@ -322,7 +322,7 @@ function draw(t) {
   // draw fish
   var ossilation = Math.sin(frame/5)
   fishes[1].x++
-  if (fishes[1].x > 200){
+  if (fishes[1].x > 300){
     fishes[1].x = 0
   }
 
@@ -332,24 +332,53 @@ function draw(t) {
       color.loaded += 0.01
     }
   }
+
+
+
   if(fishes[1].dying) {
     for(var i=fishes[1].deathParticles.length-1;i>=0;i--){
       var p = fishes[1].deathParticles[i]
       var targetDir = directionTowards(p.target, p)
-      if(Math.abs(p.dir - targetDir) > 0.3) {
-        if(p.dir < targetDir){
+      //if(Math.abs(p.dir - targetDir) > 0.5) {
+        /*if(p.dir < targetDir || Math.abs(p.dir - targetDir) >= Math.PI/2){
           p.dir += 0.1
         } else {
           p.dir -= 0.1
+        }*/
+      //}
+
+      var t1 = p.dir
+      var t2 = targetDir
+      var arcSpeed = 0.1
+      if(t1-t2>0.2){
+        if(t1>0 && t2<0){
+          if(t1>t2+Math.PI){
+            p.dir += arcSpeed
+          } else {
+            p.dir -= arcSpeed
+          }
+        } else {
+          p.dir -= arcSpeed
+        }
+      } else if(t1-t2 <0.2) {
+        if(t1<0&&t2>0){
+          if(t1+Math.PI>t2){
+            p.dir += arcSpeed
+          } else {
+            p.dir -= arcSpeed
+          }
+        } else{
+          p.dir += arcSpeed
         }
       }
+
       var dir = p.dir
       var dist = distance(p.target, p)//Math.pow(distance(p.target, p)/1000, 8)
-      p.x+=Math.cos(dir) * 4 + (Math.random()*4 - 2) + Math.cos(dir) * (1/(dist+1))
-      p.y+=Math.sin(dir) * 4 + (Math.random()*4 - 2) + Math.sin(dir) * (1/(dist+1))
+      p.x+=Math.cos(dir) * 4 + (Math.random()*2 - 1) + Math.cos(dir) * (1/(dist+1))
+      p.y+=Math.sin(dir) * 4 + (Math.random()*2 - 1) + Math.sin(dir) * (1/(dist+1))
       p.r = dist/50
       p.r = p.r<0?0:p.r
-      if(dist < 4) {
+      if(dist < p.target.size/8+10) {
         fishes[1].deathParticles.splice(i,1)
       }
     }
@@ -381,6 +410,12 @@ function draw(t) {
     fishes[i].draw(ctx, ossilation)
   }
 
+  if(debug){
+    ctx.beginPath()
+    ctx.fillStyle = '#000'
+    ctx.arc(fishes[0].x,fishes[0].y, fishes[0].size/8+10, 0, Math.PI*2, false)
+    ctx.fill()
+  }
   frame++
 }
 
