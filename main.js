@@ -380,6 +380,7 @@ function draw(t) {
       p.r = p.r<0?0:p.r
       if(dist < p.target.size/8+10) {
         fishes[1].deathParticles.splice(i,1)
+        fishes[0].size+=0.01
       }
     }
   }
