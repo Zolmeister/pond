@@ -1,7 +1,7 @@
 function Fish(x, y, size, dir) {
   var randCol = randColor()
 
-  this.dir = dir || Math.PI/4 // radians
+  this.dir = dir || 0 // radians
   this.targetDir = dir
   this.arcSpeed = 0.07
   this.canv = document.createElement('canvas')
@@ -48,6 +48,22 @@ Fish.prototype.draw = function(outputCtx, o) {
   ctx.fillStyle = fish.bodyColor
   ctx.lineWidth = 5
   ctx.beginPath()
+
+  var t1 = this.dir
+  var t2 = this.targetDir
+  var moveDir = 1
+  var diff = 0
+  if(Math.abs(t1-t2)>Math.PI) {
+    moveDir = -1
+  }
+  if(t1 > t2) {
+    diff = t1-t2*moveDir
+  } else if(t1 < t2) {
+    diff = t2-t1*moveDir
+  }
+  var curv = this.size/15 * diff
+  curv = curv || 0
+
   for(var i = -1; i < 2; i+=2){
     var start = {
       x: x + size,
@@ -55,30 +71,29 @@ Fish.prototype.draw = function(outputCtx, o) {
     }
     var c1 = {
       x: x + size * (14/15),
-      y: y + i*size + size/30*o
+      y: y + i*size + size/30*o + curv/3
     }
     var c2 = {
       x: x - size/2,
-      y: y + i*size + size/30*o
+      y: y + i*size + size/30*o + curv/2
     }
     var end = {
       x: x - size*2,
-      y: y + i*size/3 + size/15*o
+      y: y + i*size/3 + size/15*o + curv
     }
     ctx.moveTo(start.x, start.y)
     ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
-
     var c3 = {
       x: x - size * 2.5,
-      y: y + i*size/6 + size/10*o
+      y: y + i*size/6 + size/10*o + curv
     }
     var c4 = {
       x: x - size*3,
-      y: y + i*size/4 - size/15*o
+      y: y + i*size/4 - size/15*o + curv/2
     }
     var end2 = {
       x: x - size*3,
-      y: y - size/15*o
+      y: y - size/15*o + curv/3
     }
     ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
   }
@@ -111,15 +126,15 @@ Fish.prototype.draw = function(outputCtx, o) {
       }
       var c1 = {
         x: x + colorSize * (14/15),
-        y: y + i*colorSize + size/30*o
+        y: y + i*colorSize + size/30*o + curv/3
       }
       var c2 = {
         x: x-colorSize/2,
-        y: y + i*colorSize + size/30*o
+        y: y + i*colorSize + size/30*o + curv/2
       }
       var end = {
         x: x - colorSize * 2.75 ,
-        y: y + size/15*o*percent
+        y: y + size/15*o*percent + curv
       }
 
       ctx.moveTo(start.x, start.y)
@@ -355,8 +370,10 @@ Fish.prototype.physics = function(ossilation){
       this.accel = [0, 0]
     } else {
       this.accel = [
-        Math.pow(Math.cos(this.dir),2) * sign(Math.cos(this.dir)),
-        Math.pow(Math.sin(this.dir),2)* sign(Math.sin(this.dir))
+        //Math.pow(Math.cos(this.dir),2) * sign(Math.cos(this.dir)),
+        //Math.pow(Math.sin(this.dir),2)* sign(Math.sin(this.dir))
+        Math.cos(this.dir),
+        Math.sin(this.dir)
       ]
     }
 
