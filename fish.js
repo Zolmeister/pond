@@ -3,7 +3,7 @@ function Fish(x, y, size, dir) {
 
   this.dir = dir || Math.PI/4 // radians
   this.targetDir = dir
-  this.arcSpeed = 0.05
+  this.arcSpeed = 0.07
   this.size = size || 20
 
   this.canv = document.createElement('canvas')
@@ -23,9 +23,9 @@ function Fish(x, y, size, dir) {
   this.dying = false // death animation
   this.dead = false // remove this entity
   this.deathParticles = []
-  this.input = [] // keyboard input to dictate movement
   this.bodyColor = randCol.rgb()
   this.bodyOutline = shadeColor(randCol, -20).rgb()
+  this.isInput = false // is the user currently pressing a button to move?
 
   this.velocity = [0, 0]
   this.accel = [0, 0]
@@ -201,14 +201,32 @@ Fish.prototype.draw = function(outputCtx, o) {
 
   for(var i=0;i<this.circles.length;i++) {
     var cir = this.circles[i]
-
     ctx.arc(cir.x, cir.y, cir.r, 0, 2 * Math.PI, false)
   }
 
   if (debug) {
+    // draw collision body circles
+    ctx.strokeStyle='#0f0'
     ctx.stroke()
+    ctx.closePath()
+
+
+    // draw dir as line, and target dir as line
+    ctx.beginPath()
+    ctx.moveTo(this.x, this.y)
+    ctx.lineTo(this.x+this.size*2*Math.cos(this.dir), this.y+this.size*2*Math.sin(this.dir))
+    ctx.strokeStyle='#ff0'
+    ctx.stroke()
+    ctx.closePath()
+
+    ctx.beginPath()
+    ctx.moveTo(this.x, this.y)
+    ctx.lineTo(this.x+this.size*2*Math.cos(this.targetDir), this.y+this.size*2*Math.sin(this.targetDir))
+    ctx.strokeStyle='#f00'
+    ctx.stroke()
+    ctx.closePath()
   }
-  ctx.closePath()
+
   ctx.restore()
 
 }
@@ -289,27 +307,21 @@ Fish.prototype.physics = function(ossilation){
       // this code makes the particles (mostly) end up at the target eventually
       var t1 = p.dir
       var t2 = targetDir
-      var arcSpeed = 0.1
-      if(t1-t2>0.2){
-        if(t1>0 && t2<0){
-          if(t1>t2+Math.PI){
-            p.dir += arcSpeed
-          } else {
-            p.dir -= arcSpeed
-          }
-        } else {
-          p.dir -= arcSpeed
-        }
-      } else if(t1-t2 <0.2) {
-        if(t1<0&&t2>0){
-          if(t1+Math.PI>t2){
-            p.dir += arcSpeed
-          } else {
-            p.dir -= arcSpeed
-          }
-        } else{
-          p.dir += arcSpeed
-        }
+      var arcSpeed = 0.2
+      var moveDir = 1
+      if(Math.abs(t1-t2)>Math.PI) {
+        moveDir = -1
+      }
+      if(t1 > t2) {
+        p.dir -= moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
+      } else if(t1 < t2) {
+        p.dir += moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
+      }
+      if(p.dir>Math.PI){
+        p.dir = p.dir - Math.PI*2
+      }
+      if(p.dir<-Math.PI){
+        p.dir = p.dir + Math.PI*2
       }
 
       var dir = p.dir
@@ -336,57 +348,64 @@ Fish.prototype.physics = function(ossilation){
       cir.y = pos[1] + this.y
     }
 
-    // update accel
-
     // movement
-
-    // move dir to face towards target direction
-    var t1 = this.dir
-    var t2 = this.targetDir
-    var arcSpeed = this.arcSpeed
-    if(t1-t2>0.2){
-      if(t1>0 && t2<0){
-        if(t1>t2+Math.PI){
-          this.dir += arcSpeed
-        } else {
-          this.dir -= arcSpeed
-        }
-      } else {
-        this.dir -= arcSpeed
-      }
-    } else if(t1-t2 <0.2) {
-      if(t1<0&&t2>0){
-        if(t1+Math.PI>t2){
-          this.dir += arcSpeed
-        } else {
-          this.dir -= arcSpeed
-        }
-      } else{
-        this.dir += arcSpeed
-      }
-    }
 
     var root2 = Math.sqrt(2)
     //var velocity = this.velocity
 
-    // update acceleration vector
-    var pi = Math.PI
-    var dirMap = {
-      'up':         -pi/2,
-      'right up':   pi/4,
-      'right':      0,
-      'down right': 7*pi/4,
-      'down':       pi/2,
-      'down left':  5*pi/4,
-      'left':       pi,
-      'left up':    3*pi/4
+    // move dir to face towards target direction
+    var t1 = this.dir
+    var t2 = typeof this.targetDir === 'undefined' ? this.dir : this.targetDir
+    var arcSpeed = this.arcSpeed
+
+    var moveDir = 1
+    if(Math.abs(t1-t2)>Math.PI) {
+      moveDir = -1
     }
-    var inputDirection = this.input.slice(0,2).sort().join(' ')
-    this.targetDir = dirMap[inputDirection]
+
+    if(t1 > t2) {
+       this.dir -= moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
+    } else if(t1 < t2) {
+      this.dir += moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
+    }
+    if(this.dir>Math.PI){
+      this.dir = this.dir - Math.PI*2
+    }
+    if(this.dir<-Math.PI){
+      this.dir = this.dir + Math.PI*2
+    }
+
+    /*if(t1-t2>0){
+      if(t1>0 && t2<0){
+        if(t1>t2+Math.PI){
+          this.dir += Math.min(arcSpeed, t1-t2)
+        } else {
+          this.dir -= Math.min(arcSpeed, t1-t2)
+        }
+      } else {
+        this.dir -= Math.min(arcSpeed, t1-t2)
+      }
+    } else if(t1-t2 <0) {
+      if(t1<0&&t2>0){
+        if(t1+Math.PI>t2){
+          this.dir += Math.max(arcSpeed, t1-t2)
+        } else {
+          this.dir -= Math.max(arcSpeed, t1-t2)
+        }
+      } else{
+        this.dir += Math.max(arcSpeed, t1-t2)
+      }
+    }
+    if(this.dir>Math.PI){
+      this.dir = this.dir - Math.PI*2
+    }
+    if(this.dir<-Math.PI){
+      this.dir = this.dir + Math.PI*2
+    }*/
 
 
-    var isInput = this.input.length > 0 ? 1 : 0
-    this.accel = [Math.cos(this.dir) * isInput, Math.sin(this.dir) * isInput]
+
+    this.accel = [Math.cos(this.dir) * this.isInput, Math.sin(this.dir) * this.isInput]
 
     // user is not applying input
     if(!this.accel) {
@@ -419,6 +438,41 @@ Fish.prototype.physics = function(ossilation){
     this.y += this.velocity[1]
   }
 }
-Fish.prototype.updateInput = function(input) {
-  this.input = input
+Fish.prototype.updateInput = function(input, isTouch) {
+  // remember that up is down and down is up because of coordinate system
+  var dirMap = {
+    'up':         -pi/2,
+    'right up':   -pi/4,
+    'right':      0,
+    'down right': pi/4,
+    'down':       pi/2,
+    'down left':  3*pi/4,
+    'left':       pi,
+    'left up':    -3*pi/4
+  }
+  if(isTouch) {
+
+    // touch input
+    var targetX = input[0]
+    var targetY = input[1]
+
+    var valid = !(typeof targetX === 'undefined' || typeof targetY === 'undefined')
+
+    if (!valid) {
+      this.isInput = false
+      return this.targetDir = this.dir
+    }
+    this.isInput = true
+    this.targetDir = directionTowards({x: targetX, y: targetY}, this)
+  } else {
+
+    // keyboard input
+    var inputDirection = input.slice(0,2).sort().join(' ')
+    var valid = typeof dirMap[inputDirection] !== 'undefined'
+    if(!valid) this.isInput = false
+    else this.isInput = true
+
+    this.targetDir =  valid ? dirMap[inputDirection] : this.dir
+  }
+
 }

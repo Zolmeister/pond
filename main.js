@@ -2,9 +2,23 @@ var $canv = $('#canv')[0]
 $canv.width = 600
 $canv.height = 400
 $canv.style.backgroundColor = '#111'
+
+$canv.onmousedown = function(e){
+  player.updateInput([e.clientX, e.clientY], true)
+}
+
+$canv.onmouseup = function(e) {
+  player.updateInput([], true)
+}
+
+$canv.onmousemove = function(e) {
+  if(player.isInput) {
+    player.updateInput([e.clientX, e.clientY], true)
+  }
+}
 var ctx = $canv.getContext('2d')
 ctx.lineJoin = 'round'
-var debug = true
+var debug = false// true
 
                // blue        l blue        l green         orange         d orange
 var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
@@ -16,7 +30,11 @@ var fishes = [player]
 var last = Date.now()
 var frame = 0
 
-var input = []
+var userInput = []
+var isTouch = false
+var pi = Math.PI
+
+
 var keymap = {
   38: 'up',
   39: 'right',
@@ -29,6 +47,7 @@ var keymap = {
 }
 
 window.onkeydown = function(e){
+
   var k = keymap[e.which]
   if (!k) return
 
@@ -40,7 +59,7 @@ window.onkeydown = function(e){
   // add to front of input list
   input.unshift(k)
 
-  player.updateInput(input)
+  player.updateInput(input, false)
 }
 
 window.onkeyup = function(e) {
@@ -52,7 +71,7 @@ window.onkeyup = function(e) {
     input.splice(input.indexOf(k), 1)
   }
 
-  player.updateInput(input)
+  player.updateInput(input, false)
 }
 
 
