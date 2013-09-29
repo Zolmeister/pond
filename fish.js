@@ -241,6 +241,7 @@ Fish.prototype.collide = function (fish) {
 }
 Fish.prototype.kill = function(target) {
   this.dying = true
+  playPop()
   var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
   for(var i = 0; i < pixels.length; i += 36 * Math.ceil(this.size/20)) {
     var r = pixels[i]
