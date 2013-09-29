@@ -1,9 +1,33 @@
-<canvas id='canv'></canvas>
-<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
-<script src='http://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.2.2/mousetrap.js'></script>
+<!DOCTYPE html>
+<html>
+    <head><title>Pond</title></head>
+    <body>
+        <canvas id='canv'></canvas>
+        <span class='sound'>&#9835;</span>
+        <style>
+            body {
+                margin: 0;
+            }
+            #canv {
+                width: 100%;
+                height: 100%;
+                position:absolute;
+            }
+            .sound {
+                cursor: pointer;
+                color: #666;
+                position: absolute;
+                right: 10px;
+                top: 10px;
+            }
+        </style>
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
+        <script src='http://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.2.2/mousetrap.js'></script>
 
-<script src='util.js'></script>
-<script src='fish.js'></script>
-<script src='particle.js'></script>
-<script src='color.js'></script>
-<script src='main.js'></script>
+        <script src='util.js'></script>
+        <script src='fish.js'></script>
+        <script src='particle.js'></script>
+        <script src='color.js'></script>
+        <script src='main.js'></script>
+    </body>
+</html

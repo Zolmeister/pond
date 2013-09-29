@@ -1,9 +1,16 @@
 var $canv = $('#canv')[0]
-$canv.width = 600
-$canv.height = 400
-$canv.style.backgroundColor = '#111'
+$canv.width = window.innerWidth//$('#canv').width()
+$canv.height = window.innerHeight//$('#canv').height()
+
+window.onresize = function() {
+  ctx = $canv.getContext('2d')
+  $canv.width = $('#canv').width()
+  $canv.height = $('#canv').height()
+}
+
 var mouseDown = false
 
+var muted = false
 popSound = document.createElement('audio')
 popSound.src='drop1.ogg'
 popSound.volume = 0.8
@@ -11,6 +18,23 @@ bgRainSound = document.createElement('audio')
 bgRainSound.src='bg1.ogg'
 bgRainSound.loop = true
 bgRainSound.play()
+if(localStorage.muted === 'true') toggleMute()
+$('.sound').bind('click', toggleMute)
+function toggleMute(){
+  if(!muted) {
+    popSound.volume = 0
+    bgRainSound.volume = 0
+    muted = true
+    $('.sound').html('&#9834;')
+    localStorage.muted = 'true'
+  } else {
+    popSound.volume = 0.8
+    bgRainSound.volume = 1
+    muted = false
+    $('.sound').html('&#9835;')
+    localStorage.muted = 'false'
+  }
+}
 
 function playPop() {
   popSound.play()
@@ -94,7 +118,8 @@ function draw(t) {
   requestAnimationFrame(draw)
   delta = t-last
   last = t
-  ctx.clearRect(player.x - $canv.width/2, player.y - $canv.height/2, $canv.width, $canv.height)
+  ctx.fillStyle = '#111'
+  ctx.fillRect(player.x - $canv.width/2, player.y - $canv.height/2, $canv.width, $canv.height)
 
   var ossilation = Math.sin(frame/5)
 
@@ -109,7 +134,11 @@ function draw(t) {
     for(var j=i+1; j<fishes.length; j++) {
       var fish2 = fishes[j]
       if(fish.collide(fish2)) {
-        fish2.kill(fish)
+        if(fish.size >= fish2.size){
+          fish2.killedBy(fish)
+        } else {
+          fish.killedBy(fish2)
+        }
       }
     }
   }
@@ -130,6 +159,6 @@ function draw(t) {
   ctx.restore()
 }
 
-fishes.push(new Fish(100,100,30))
-fishes.push(new Fish(300,100,30))
+fishes.push(new Fish(100,100,19))
+fishes.push(new Fish(300,100,10))
 requestAnimationFrame(draw)

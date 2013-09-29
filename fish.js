@@ -239,7 +239,7 @@ Fish.prototype.collide = function (fish) {
 
   return false
 }
-Fish.prototype.kill = function(target) {
+Fish.prototype.killedBy = function(target) {
   this.dying = true
   playPop()
   var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
