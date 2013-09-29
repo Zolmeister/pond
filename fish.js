@@ -180,7 +180,9 @@ Fish.prototype.draw = function(outputCtx, o) {
     ctx.stroke()
     ctx.closePath()
   }
-
+  if(this.targetPos){
+    ctx.fillRect(this.targetPos.x, this.targetPos.y, 10,10)
+  }
   ctx.restore()
 
 }
@@ -323,12 +325,7 @@ Fish.prototype.physics = function(ossilation){
 
     // mouse/touch input has a target location
     if(this.targetPos) {
-      if(distance(this, this.targetPos) < this.size){
-        this.isInput = false
-        this.targetDir = this.dir
-      } else {
         this.targetDir = directionTowards(this.targetPos, this)
-      }
     }
 
     var t1 = this.dir
@@ -352,9 +349,9 @@ Fish.prototype.physics = function(ossilation){
       this.dir = this.dir + Math.PI*2
     }
 
-
-    // user is not applying input
     if(!this.isInput) {
+
+      // user is not applying input
       this.accel = [0, 0]
     } else {
       this.accel = [
@@ -405,17 +402,19 @@ Fish.prototype.updateInput = function(input, isTouch) {
   if(isTouch) {
 
     // touch input
-    var targetX = input[0]
-    var targetY = input[1]
+    var xDelta= input[0]
+    var yDelta = input[1]
 
-    var valid = !(typeof targetX === 'undefined' || typeof targetY === 'undefined')
+    var valid = !(typeof xDelta === 'undefined' || typeof yDelta === 'undefined')
 
     if (!valid) {
       this.isInput = false
+      this.targetPos = null
       return this.targetDir = this.dir
     }
     this.isInput = true
-    this.targetPos = {x: targetX, y: targetY}
+    this.targetDir = directionTowards({x: this.x + xDelta, y: this.y + yDelta}, this)
+    //this.targetPos = {x: targetX, y: targetY}
   } else {
 
     // keyboard input

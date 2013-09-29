@@ -5,7 +5,7 @@ $canv.style.backgroundColor = '#111'
 
 var mouseDown = false
 $canv.onmousedown = function(e){
-  player.updateInput([e.clientX, e.clientY], true)
+  player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
   mouseDown = true
 }
 
@@ -16,7 +16,7 @@ $canv.onmouseup = function(e) {
 
 $canv.onmousemove = function(e) {
   if(mouseDown) {
-    player.updateInput([e.clientX, e.clientY], true)
+    player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
   }
 }
 var ctx = $canv.getContext('2d')
@@ -77,10 +77,12 @@ window.onkeyup = function(e) {
 
 
 function draw(t) {
+  ctx.save()
+  ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
   requestAnimationFrame(draw)
   delta = t-last
   last = t
-  ctx.clearRect(0, 0, 600, 400)
+  ctx.clearRect(player.x - $canv.width/2, player.y - $canv.height/2, $canv.width, $canv.height)
 
   var ossilation = Math.sin(frame/5)
 
@@ -113,6 +115,7 @@ function draw(t) {
   }
 
   frame++
+  ctx.restore()
 }
 
 fishes.push(new Fish(100,100,30))
