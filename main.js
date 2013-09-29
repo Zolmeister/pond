@@ -115,5 +115,5 @@ function draw(t) {
   frame++
 }
 
-fishes.push(new Fish(100,100,40))
+fishes.push(new Fish(100,100,30))
 requestAnimationFrame(draw)

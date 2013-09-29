@@ -131,7 +131,7 @@ Fish.prototype.draw = function(outputCtx, o) {
     ctx.closePath()
 
     // resize for next color drawn (outside -> in)
-    colorSize -= thick //* (1+(1-(c+1<colors.length ? colors[c+1].loaded : 1)))
+    colorSize -= thick
     if (colorSize < 0) break
   }
 
@@ -197,7 +197,6 @@ Fish.prototype.drawDeath = function(outputCtx) {
     ctx.fill()
     ctx.stroke()
   }
-  //outputCtx.drawImage(this.canv, 0, 0)
 }
 Fish.prototype.collide = function (fish) {
 
@@ -226,7 +225,7 @@ Fish.prototype.collide = function (fish) {
 Fish.prototype.kill = function(target) {
   this.dying = true
   var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
-  for(var i = 0; i < pixels.length; i += 36 ) {
+  for(var i = 0; i < pixels.length; i += 36 * Math.ceil(this.size/20)) {
     var r = pixels[i]
     var g = pixels[i + 1]
     var b = pixels[i + 2]
@@ -238,8 +237,14 @@ Fish.prototype.kill = function(target) {
 
     var x = i/4 % this.canv.width
     var y = Math.floor(i/4 / this.canv.width)
+    x -= this.canv.width/2 + this.size
+    y -= this.canv.height/2
+    var relativePos = rot(x, y, this.dir)
+    x=this.x + relativePos[0]
+    y=this.y + relativePos[1]
+
     var col = 'rgb('+r+','+g+','+b+')'
-    var dir = directionTowards({ x:x, y:y }, this)
+    var dir = directionTowards({x: x, y: y}, this)
     this.deathParticles.push(new Particle(x, y, col, target, Math.PI*Math.random()*2 - Math.PI, this.size/20))
   }
 }
@@ -286,6 +291,7 @@ Fish.prototype.physics = function(ossilation){
       p.r = p.r<0?0:p.r
       if(dist < p.target.size/8+10) {
         this.deathParticles.splice(i,1)
+
         p.target.setSize(p.target.size+0.01)
         if(this.colors.length > 0) {
           for(var i=this.colors.length-1;i>=0;i--) {
