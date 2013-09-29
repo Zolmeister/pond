@@ -4,46 +4,16 @@ $canv.height = 400
 $canv.style.backgroundColor = '#111'
 var mouseDown = false
 
+popSound = document.createElement('audio')
+popSound.src='drop1.ogg'
+popSound.volume = 0.8
+bgRainSound = document.createElement('audio')
+bgRainSound.src='bg1.ogg'
+bgRainSound.loop = true
+bgRainSound.play()
 
-var popSoundBuffer = null;
-// Fix up prefixing
-window.AudioContext = window.AudioContext || window.webkitAudioContext;
-var context = new AudioContext();
-
-loadPopSound('drop1.ogg')
-function loadPopSound(url) {
-  var request = new XMLHttpRequest();
-  request.open('GET', url, true);
-  request.responseType = 'arraybuffer';
-
-  // Decode asynchronously
-  request.onload = function() {
-    context.decodeAudioData(request.response, function(buffer) {
-      popSoundBuffer = buffer;
-    }, function(err){
-      console.log(err)
-    });
-  }
-  request.send();
-}
-ps = document.createElement('audio')
-ps.src='drop1.ogg'
-ps.volume = 0.8
-ps2 = document.createElement('audio')
-ps2.src='bg1.ogg'
-
-ps2.loop = true
-ps2.play()
-function playSound(buffer) {
-  source = context.createBufferSource(); // creates a sound source
-  source.buffer = buffer;                    // tell the source which sound to play
-  source.connect(context.destination);       // connect the source to the context's destination (the speakers)
-  source.start(0);                           // play the source now
-                                             // note: on older systems, may have to use deprecated noteOn(time);
-}
 function playPop() {
-  //playSound(popSoundBuffer)
-  ps.play()
+  popSound.play()
 }
 
 $canv.onmousedown = function(e){
