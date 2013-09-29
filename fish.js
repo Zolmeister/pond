@@ -4,19 +4,17 @@ function Fish(x, y, size, dir) {
   this.dir = dir || Math.PI/4 // radians
   this.targetDir = dir
   this.arcSpeed = 0.07
-  this.size = size || 20
-
   this.canv = document.createElement('canvas')
-  this.canv.width = this.size*5
-  this.canv.height = this.size*3
-  this.ctx = this.canv.getContext('2d')
-  this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
+  this.setSize(size || 20)
+
+
+
 
   // loaded percent is used for new colors that have been added and need to grow
   this.colors = [
     {col: randColor().rgb(), thick: 4, loaded: 1},
     {col: randColor().rgb(), thick: 5, loaded: 1},
-    {col: randColor().rgb(), thick: 5, loaded: 1}
+
   ],
   this.x = x || 300
   this.y = y || 200
@@ -26,57 +24,11 @@ function Fish(x, y, size, dir) {
   this.bodyColor = randCol.rgb()
   this.bodyOutline = shadeColor(randCol, -20).rgb()
   this.isInput = false // is the user currently pressing a button to move?
+  this.targetPos = null // defined if user input is touch
 
   this.velocity = [0, 0]
   this.accel = [0, 0]
   this.maxSpeed = 2
-
-  this.circles = [
-    {
-      x: null,
-      y: null,
-      r: this.size * 11/14
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 12/15
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 10/15
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 7/15
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 4/14
-    },
-    /*{
-      x: null,
-      y: null,
-      r: this.size * 3/13
-    },*/
-    {
-      x: null,
-      y: null,
-      r: this.size * 3/15
-    }
-  ]
-
-  this.circleMap = [
-    [this.size/5, this.size/40],
-    [-this.size/3, this.size/30],
-    [-this.size, this.size/20],
-    [-this.size*1.6, this.size/15],
-    [-this.size*2.2, this.size/12],
-    [-this.size*2.8, -this.size/30]
-  ]
 
 }
 Fish.prototype.draw = function(outputCtx, o) {
@@ -198,14 +150,16 @@ Fish.prototype.draw = function(outputCtx, o) {
   ctx.lineWidth  = 2
   ctx.beginPath()
   ctx.save()
-
-  for(var i=0;i<this.circles.length;i++) {
-    var cir = this.circles[i]
-    ctx.arc(cir.x, cir.y, cir.r, 0, 2 * Math.PI, false)
+  if(!this.dying) {
+    for(var i=0;i<this.circles.length;i++) {
+      var cir = this.circles[i]
+      ctx.arc(cir.x, cir.y, cir.r, 0, 2 * Math.PI, false)
+    }
   }
 
   if (debug) {
     // draw collision body circles
+
     ctx.strokeStyle='#0f0'
     ctx.stroke()
     ctx.closePath()
@@ -332,7 +286,13 @@ Fish.prototype.physics = function(ossilation){
       p.r = p.r<0?0:p.r
       if(dist < p.target.size/8+10) {
         this.deathParticles.splice(i,1)
-        p.target.size+=0.01
+        p.target.setSize(p.target.size+0.01)
+        if(this.colors.length > 0) {
+          for(var i=this.colors.length-1;i>=0;i--) {
+            this.colors[i].loaded = 0
+            p.target.colors.push(this.colors.pop())
+          }
+        }
       }
     }
     if (!this.deathParticles.length) {
@@ -354,6 +314,17 @@ Fish.prototype.physics = function(ossilation){
     //var velocity = this.velocity
 
     // move dir to face towards target direction
+
+    // mouse/touch input has a target location
+    if(this.targetPos) {
+      if(distance(this, this.targetPos) < this.size){
+        this.isInput = false
+        this.targetDir = this.dir
+      } else {
+        this.targetDir = directionTowards(this.targetPos, this)
+      }
+    }
+
     var t1 = this.dir
     var t2 = typeof this.targetDir === 'undefined' ? this.dir : this.targetDir
     var arcSpeed = this.arcSpeed
@@ -375,41 +346,15 @@ Fish.prototype.physics = function(ossilation){
       this.dir = this.dir + Math.PI*2
     }
 
-    /*if(t1-t2>0){
-      if(t1>0 && t2<0){
-        if(t1>t2+Math.PI){
-          this.dir += Math.min(arcSpeed, t1-t2)
-        } else {
-          this.dir -= Math.min(arcSpeed, t1-t2)
-        }
-      } else {
-        this.dir -= Math.min(arcSpeed, t1-t2)
-      }
-    } else if(t1-t2 <0) {
-      if(t1<0&&t2>0){
-        if(t1+Math.PI>t2){
-          this.dir += Math.max(arcSpeed, t1-t2)
-        } else {
-          this.dir -= Math.max(arcSpeed, t1-t2)
-        }
-      } else{
-        this.dir += Math.max(arcSpeed, t1-t2)
-      }
-    }
-    if(this.dir>Math.PI){
-      this.dir = this.dir - Math.PI*2
-    }
-    if(this.dir<-Math.PI){
-      this.dir = this.dir + Math.PI*2
-    }*/
-
-
-
-    this.accel = [Math.cos(this.dir) * this.isInput, Math.sin(this.dir) * this.isInput]
 
     // user is not applying input
-    if(!this.accel) {
-        this.accel = [0, 0]
+    if(!this.isInput) {
+      this.accel = [0, 0]
+    } else {
+      this.accel = [
+        Math.pow(Math.cos(this.dir),2) * sign(Math.cos(this.dir)),
+        Math.pow(Math.sin(this.dir),2)* sign(Math.sin(this.dir))
+      ]
     }
 
     // update velocity vector
@@ -420,17 +365,18 @@ Fish.prototype.physics = function(ossilation){
     this.velocity[1] = Math.max(-this.maxSpeed, Math.min(this.maxSpeed, this.velocity[1]))
 
     // apply friction
+    var friction = 0.1
     if (this.velocity[0] > 0) {
-      this.velocity[0] -= Math.min(0.2, this.velocity[0])
+      this.velocity[0] -= Math.min(friction, this.velocity[0])
     }
     if (this.velocity[0] < 0) {
-      this.velocity[0] -= Math.max(-0.2, this.velocity[0])
+      this.velocity[0] -= Math.max(-friction, this.velocity[0])
     }
     if (this.velocity[1] > 0) {
-      this.velocity[1] -= Math.min(0.2, this.velocity[1])
+      this.velocity[1] -= Math.min(friction, this.velocity[1])
     }
     if (this.velocity[1] < 0) {
-      this.velocity[1] -= Math.max(-0.2, this.velocity[1])
+      this.velocity[1] -= Math.max(-friction, this.velocity[1])
     }
 
     // update position vector
@@ -463,7 +409,7 @@ Fish.prototype.updateInput = function(input, isTouch) {
       return this.targetDir = this.dir
     }
     this.isInput = true
-    this.targetDir = directionTowards({x: targetX, y: targetY}, this)
+    this.targetPos = {x: targetX, y: targetY}
   } else {
 
     // keyboard input
@@ -473,6 +419,57 @@ Fish.prototype.updateInput = function(input, isTouch) {
     else this.isInput = true
 
     this.targetDir =  valid ? dirMap[inputDirection] : this.dir
+
+    // remove pos from touch
+    this.targetPos = null
   }
 
+}
+Fish.prototype.setSize = function(size) {
+  this.size = size
+  this.canv.width = this.size*5
+  this.canv.height = this.size*3
+  this.ctx = this.canv.getContext('2d')
+  this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
+  this.circles = [
+    {
+      x: null,
+      y: null,
+      r: this.size * 11/14
+    },
+    {
+      x: null,
+      y: null,
+      r: this.size * 12/15
+    },
+    {
+      x: null,
+      y: null,
+      r: this.size * 10/15
+    },
+    {
+      x: null,
+      y: null,
+      r: this.size * 7/15
+    },
+    {
+      x: null,
+      y: null,
+      r: this.size * 4/14
+    },
+    {
+      x: null,
+      y: null,
+      r: this.size * 3/15
+    }
+  ]
+
+  this.circleMap = [
+    [this.size/5, this.size/40],
+    [-this.size/3, this.size/30],
+    [-this.size, this.size/20],
+    [-this.size*1.6, this.size/15],
+    [-this.size*2.2, this.size/12],
+    [-this.size*2.8, -this.size/30]
+  ]
 }

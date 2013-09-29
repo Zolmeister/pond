@@ -3,22 +3,25 @@ $canv.width = 600
 $canv.height = 400
 $canv.style.backgroundColor = '#111'
 
+var mouseDown = false
 $canv.onmousedown = function(e){
   player.updateInput([e.clientX, e.clientY], true)
+  mouseDown = true
 }
 
 $canv.onmouseup = function(e) {
   player.updateInput([], true)
+  mouseDown = false
 }
 
 $canv.onmousemove = function(e) {
-  if(player.isInput) {
+  if(mouseDown) {
     player.updateInput([e.clientX, e.clientY], true)
   }
 }
 var ctx = $canv.getContext('2d')
 ctx.lineJoin = 'round'
-var debug = false// true
+var debug =  false //true
 
                // blue        l blue        l green         orange         d orange
 var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
@@ -31,9 +34,7 @@ var last = Date.now()
 var frame = 0
 
 var userInput = []
-var isTouch = false
 var pi = Math.PI
-
 
 var keymap = {
   38: 'up',
@@ -52,14 +53,14 @@ window.onkeydown = function(e){
   if (!k) return
 
   // remove from input list if it was there already
-  if(input.indexOf(k)!=-1) {
-    input.splice(input.indexOf(k), 1)
+  if(userInput.indexOf(k)!=-1) {
+    userInput.splice(userInput.indexOf(k), 1)
   }
 
   // add to front of input list
-  input.unshift(k)
+  userInput.unshift(k)
 
-  player.updateInput(input, false)
+  player.updateInput(userInput, false)
 }
 
 window.onkeyup = function(e) {
@@ -67,11 +68,11 @@ window.onkeyup = function(e) {
   if (!k) return
 
   // remove from input list if it was there already
-  if(input.indexOf(k)!=-1) {
-    input.splice(input.indexOf(k), 1)
+  if(userInput.indexOf(k)!=-1) {
+    userInput.splice(userInput.indexOf(k), 1)
   }
 
-  player.updateInput(input, false)
+  player.updateInput(userInput, false)
 }
 
 
@@ -110,13 +111,6 @@ function draw(t) {
   for(var i=0; i<fishes.length; i++) {
     fishes[i].draw(ctx, ossilation)
   }
-
-  /*if(debug){
-    ctx.beginPath()
-    ctx.fillStyle = '#000'
-    ctx.arc(fishes[0].x,fishes[0].y, fishes[0].size/8+10, 0, Math.PI*2, false)
-    ctx.fill()
-  }*/
 
   frame++
 }

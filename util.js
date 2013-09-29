@@ -43,3 +43,8 @@ function rot(x, y, dir) {
   ]*/
   return [Math.cos(dir)*x - Math.sin(dir)*y, Math.sin(dir)*x + Math.cos(dir)*y]
 }
+
+function sign(n){
+  if(n<0) return -1
+  return 1
+}
