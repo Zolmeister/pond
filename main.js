@@ -1,6 +1,10 @@
 var $canv = $('#canv')[0]
-$canv.width = window.innerWidth//$('#canv').width()
-$canv.height = window.innerHeight//$('#canv').height()
+$canv.width = window.innerWidth
+$canv.height = window.innerHeight
+
+var ctx = $canv.getContext('2d')
+ctx.lineJoin = 'round'
+var debug =  false //true
 
 window.onresize = function() {
   ctx = $canv.getContext('2d')
@@ -55,9 +59,7 @@ $canv.onmousemove = function(e) {
     player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
   }
 }
-var ctx = $canv.getContext('2d')
-ctx.lineJoin = 'round'
-var debug =  false //true
+
 
                // blue        l blue        l green         orange         d orange
 var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
