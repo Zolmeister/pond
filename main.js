@@ -161,6 +161,6 @@ function draw(t) {
   ctx.restore()
 }
 
-fishes.push(new Fish(100,100,19))
-fishes.push(new Fish(300,100,10))
+fishes.push(new Fish(400,200,19))
+fishes.push(new Fish(300,300,10))
 requestAnimationFrame(draw)

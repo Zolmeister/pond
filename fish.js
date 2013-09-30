@@ -5,6 +5,13 @@ function Fish(x, y, size, dir) {
   this.targetDir = dir
   this.arcSpeed = 0.07
   this.canv = document.createElement('canvas')
+  this.circles = Array.apply([], new Array(6)).map(function(cir, i){
+    return {
+      x: null,
+      y: null,
+      r: null
+    }
+  })
   this.setSize(size || 20)
 
 
@@ -205,14 +212,8 @@ Fish.prototype.drawDeath = function(outputCtx) {
   var ctx = outputCtx
   ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
   ctx.lineWidth = 1
-  //ctx.clearRect(0, 0, this.canv.width, this.canv.height)
   for(var i=0;i<this.deathParticles.length;i++) {
-    var p = this.deathParticles[i]
-    ctx.beginPath()
-    ctx.fillStyle = p.color
-    ctx.arc(p.x, p.y, p.r, 0, 2 * Math.PI, false)
-    ctx.fill()
-    ctx.stroke()
+    this.deathParticles[i].draw(ctx)
   }
 }
 Fish.prototype.collide = function (fish) {
@@ -261,7 +262,7 @@ Fish.prototype.killedBy = function(target) {
     x=this.x + relativePos[0]
     y=this.y + relativePos[1]
 
-    var col = 'rgb('+r+','+g+','+b+')'
+    var col = new Color(r, g, b)
     var dir = directionTowards({x: x, y: y}, this)
     this.deathParticles.push(new Particle(x, y, col, target, Math.PI*Math.random()*2 - Math.PI, this.size/20))
   }
@@ -454,38 +455,11 @@ Fish.prototype.setSize = function(size) {
   this.canv.height = this.size*3
   this.ctx = this.canv.getContext('2d')
   this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
-  this.circles = [
-    {
-      x: null,
-      y: null,
-      r: this.size * 11/14
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 12/15
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 10/15
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 7/15
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 4/14
-    },
-    {
-      x: null,
-      y: null,
-      r: this.size * 3/15
-    }
-  ]
+
+  var ratios =  [11/14, 12/15, 10/15, 7/15, 4/14, 3/15]
+  for(var i=0;i<this.circles.length; i++) {
+    this.circles[i].r = this.size * ratios[i]
+  }
 
   this.circleMap = [
     [this.size/5, this.size/40],
