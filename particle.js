@@ -1,4 +1,4 @@
-function Particle(x, y, color, targetFish, dir, r, speed) {
+function Particle(x, y, color, targetFish, dir, r, speed, arcSpeed) {
   this.x = x || 0
   this.y = y || 0
   this.color = color || '#fff'
@@ -6,6 +6,7 @@ function Particle(x, y, color, targetFish, dir, r, speed) {
   this.dir = dir || 0
   this.r = r || 2
   this.speed = speed || 4
+  this.arcSpeed = arcSpeed || 0.2
 }
 Particle.prototype.draw = function(ctx) {
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
@@ -23,7 +24,7 @@ Particle.prototype.physics = function() {
   // this code makes the particles (mostly) end up at the target eventually
   var t1 = p.dir
   var t2 = targetDir
-  var arcSpeed = 0.2
+  var arcSpeed = this.arcSpeed
   var moveDir = 1
   if(Math.abs(t1-t2)>Math.PI) {
     moveDir = -1

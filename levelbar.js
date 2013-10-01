@@ -31,7 +31,7 @@ LevelBar.prototype.toParticles = function(target) {
     var y = Math.floor(i/4 / this.canv.width) + Math.random() * 2 + 2
     var col = new Color(r, g, b)
     var dir = directionTowards(target, {x: x, y: y})
-    particles.push(new Particle(x, y, col, target, dir, 2, 10))
+    particles.push(new Particle(x, y, col, target, dir, 2, 10, 0.6))
   }
   return particles
 }
@@ -78,6 +78,7 @@ LevelBar.prototype.draw = function(outputCtx) {
   ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
   ctx.shadowBlur = 10
   ctx.shadowOffsetY = -5
+  ctx.shadowOffsetX = -5
   for(var i=0;i<this.colors.length;i++) {
     var color = this.colors[i]
     ctx.fillStyle = color.col.rgb()

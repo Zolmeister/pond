@@ -88,7 +88,7 @@ function debugSpawn(){
   fishes.push(new Fish(100,100,10 ))
 }
 window.onkeydown = function(e){
-if(e.which === 32) debugSpawn()
+if(e.which === 32) levelUp()
 
   var k = keymap[e.which]
   if (!k) return
@@ -118,12 +118,13 @@ window.onkeyup = function(e) {
 
 var levelParticles = []
 var levelBar = new LevelBar($canv.width)
-var levelBalls = new LevelBalls($canv.width)
+var levelBalls = new LevelBalls($canv.width, $canv.height)
 var levelBallParticles = []
+var endGameParticles = []
 
 // level debug
-levelBalls.addBall()
-setTimeout(function(){
+//levelBalls.addBall()
+function levelUp(){
   levelBar.addColor()
   levelBar.addColor()
   levelBar.addColor()
@@ -142,8 +143,33 @@ setTimeout(function(){
   player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
   player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
   player.colors.push({col: randColor().rgb(), thick: 4, loaded: 0.9})*/
-}, 100)
+}
+function levelUp2(){
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
+  levelBalls.addBall()
+  levelBalls.shift()
 
+  levelBalls.balls.forEach(function(b){b.size = b.targetSize})
+
+  levelBalls.addBall()
+}
+//setTimeout(levelUp, 100)
+setTimeout(levelUp2, 100)
 function draw(t) {
   requestAnimationFrame(draw)
   delta = t-last
@@ -211,13 +237,13 @@ function draw(t) {
 
   // draw level particles (static position)
   ctx.translate(player.x - $canv.width/2, player.y - $canv.height/2)
-  var nextStage = false //levelBar.physics()
+  var nextStage = levelBar.physics()
   if(nextStage) {
     levelBallParticles = levelBallParticles.concat(levelBar.toParticles(levelBalls))
-    levelBalls.nextColors = levelBar.colors
+    levelBalls.nextColors = levelBar.colors.slice(0, 2)
 
     // reset levelBar
-    levelBar = new LevelBar()
+    levelBar = new LevelBar($canv.width)
   }
 
   levelBar.draw(ctx)
@@ -229,7 +255,6 @@ function draw(t) {
       if(!levelBar.updating) {
         levelBar.updating = true
         levelBar.addColor()
-        console.log(levelBar)
       }
       if(levelParticles.length === 0) {
         levelBar.updating = false
@@ -237,7 +262,18 @@ function draw(t) {
     }
   }
 
-  levelBalls.physics()
+  var nextStage = levelBalls.physics()
+  if(nextStage) {
+    endGameParticles = levelBalls.toParticles(player)
+
+    // un-static position
+    for(var i=0;i<endGameParticles.length;i++) {
+      endGameParticles[i].x += player.x - $canv.width/2
+      endGameParticles[i].y += player.y - $canv.height/2
+    }
+
+    levelBalls = new LevelBalls($canv.width, $canv.height)
+  }
   levelBalls.draw(ctx)
   for(var i=levelBallParticles.length-1;i>=0;i--){
     var dist = levelBallParticles[i].physics()
@@ -250,8 +286,14 @@ function draw(t) {
       }
       if(levelBallParticles.length === 0) {
         levelBalls.updating = false
+        levelBalls.shift()
       }
     }
+  }
+  ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
+  for(var i=0;i<endGameParticles.length;i++) {
+    endGameParticles[i].physics()
+    endGameParticles[i].draw(ctx)
   }
   //ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
 

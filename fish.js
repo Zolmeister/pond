@@ -18,10 +18,6 @@ function Fish(x, y, size, dir) {
   this.ossilation = Math.sin(frame/5)
   this.curv = 0
 
-
-
-
-
   // loaded percent is used for new colors that have been added and need to grow
   this.colors = [
     {col: randColor().rgb(), thick: 4, loaded: 1},
