@@ -1,15 +1,50 @@
-function Particle(x, y, color, targetFish, dir, r) {
+function Particle(x, y, color, targetFish, dir, r, speed) {
   this.x = x || 0
   this.y = y || 0
   this.color = color || '#fff'
   this.target = targetFish
   this.dir = dir || 0
   this.r = r || 2
+  this.speed = speed || 4
 }
 Particle.prototype.draw = function(ctx) {
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
+    ctx.lineWidth = 1
     ctx.beginPath()
     ctx.fillStyle = this.color.rgb()
     ctx.arc(this.x, this.y, this.r*3, 0, 2 * Math.PI, false)
     ctx.fill()
     ctx.stroke()
+}
+Particle.prototype.physics = function() {
+  var p = this
+  var targetDir = directionTowards(p.target, p)
+
+  // this code makes the particles (mostly) end up at the target eventually
+  var t1 = p.dir
+  var t2 = targetDir
+  var arcSpeed = 0.2
+  var moveDir = 1
+  if(Math.abs(t1-t2)>Math.PI) {
+    moveDir = -1
+  }
+  if(t1 > t2) {
+    p.dir -= moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
+  } else if(t1 < t2) {
+    p.dir += moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
+  }
+  if(p.dir>Math.PI){
+    p.dir = p.dir - Math.PI*2
+  }
+  if(p.dir<-Math.PI){
+    p.dir = p.dir + Math.PI*2
+  }
+
+  var dir = p.dir
+  var dist = distance(p.target, p)
+  p.x+=Math.cos(dir) * this.speed + (Math.random()*2 - 1) + Math.cos(dir) * (1/(dist+1))
+  p.y+=Math.sin(dir) * this.speed + (Math.random()*2 - 1) + Math.sin(dir) * (1/(dist+1))
+  p.r = Math.log(dist)/4
+  p.r = p.r<0?0:p.r
+  return dist
 }

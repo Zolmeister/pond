@@ -84,8 +84,11 @@ var keymap = {
   83: 'down',
   65: 'left'
 }
-
+function debugSpawn(){
+  fishes.push(new Fish(100,100,10 ))
+}
 window.onkeydown = function(e){
+if(e.which === 32) debugSpawn()
 
   var k = keymap[e.which]
   if (!k) return
@@ -113,21 +116,64 @@ window.onkeyup = function(e) {
   player.updateInput(userInput, false)
 }
 
+var levelParticles = []
+var levelBar = new LevelBar($canv.width)
+var levelBalls = new LevelBalls($canv.width)
+var levelBallParticles = []
+
+// level debug
+levelBalls.addBall()
+setTimeout(function(){
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.addColor()
+  levelBar.colors.forEach(function(col){
+  col.loaded = 1
+  })
+  levelBar.x = levelBar.targetX
+  levelBar.addColor()
+  /*player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
+  player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
+  player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
+  player.colors.push({col: randColor().rgb(), thick: 4, loaded: 0.9})*/
+}, 100)
 
 function draw(t) {
-  ctx.save()
-  ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
   requestAnimationFrame(draw)
   delta = t-last
   last = t
-  ctx.fillStyle = '#111'
-  ctx.fillRect(player.x - $canv.width/2, player.y - $canv.height/2, $canv.width, $canv.height)
-
-  var ossilation = Math.sin(frame/5)
 
   // physics
   for(var i=0; i<fishes.length; i++) {
-    fishes[i].physics(ossilation)
+    fishes[i].physics()
+  }
+
+  // player score
+  if(player.colors.length > 5 && player.colors.every(function(col){return col.loaded >= 1})) {
+
+    // steal colors from player, create new particle blob, and add to top score
+    //
+    player.drawColors()
+    var newParticles = player.toParticles(levelBar)
+
+    // staticly position
+    for(var i=0;i<newParticles.length;i++) {
+      newParticles[i].x += -player.x + $canv.width/2
+      newParticles[i].y += -player.y + $canv.height/2
+    }
+
+    levelParticles = levelParticles.concat(newParticles)
+    var colors = player.colors.splice(1, player.colors.length)
+
+
+    //var img = player.ctx.getImageData(0, 0, player.canv.width, player.canv.height)
+    //ctx.putImageData(img, 0, 0)
   }
 
   // collision
@@ -152,12 +198,63 @@ function draw(t) {
     }
   }
 
+  ctx.save()
+  ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
+  ctx.fillStyle = '#111'
+  ctx.fillRect(player.x - $canv.width/2, player.y - $canv.height/2, $canv.width, $canv.height)
+
   // draw
   for(var i=0; i<fishes.length; i++) {
-    fishes[i].draw(ctx, ossilation)
+    fishes[i].draw(ctx)
   }
 
-  frame++
+
+  // draw level particles (static position)
+  ctx.translate(player.x - $canv.width/2, player.y - $canv.height/2)
+  var nextStage = false //levelBar.physics()
+  if(nextStage) {
+    levelBallParticles = levelBallParticles.concat(levelBar.toParticles(levelBalls))
+    levelBalls.nextColors = levelBar.colors
+
+    // reset levelBar
+    levelBar = new LevelBar()
+  }
+
+  levelBar.draw(ctx)
+  for(var i=levelParticles.length-1; i>=0; i--) {
+    var dist = levelParticles[i].physics()
+    levelParticles[i].draw(ctx)
+    if (dist < 10) {
+      levelParticles.splice(i, 1)
+      if(!levelBar.updating) {
+        levelBar.updating = true
+        levelBar.addColor()
+        console.log(levelBar)
+      }
+      if(levelParticles.length === 0) {
+        levelBar.updating = false
+      }
+    }
+  }
+
+  levelBalls.physics()
+  levelBalls.draw(ctx)
+  for(var i=levelBallParticles.length-1;i>=0;i--){
+    var dist = levelBallParticles[i].physics()
+    levelBallParticles[i].draw(ctx)
+    if (dist < 10) {
+      levelBallParticles.splice(i, 1)
+      if(!levelBalls.updating) {
+        levelBalls.updating = true
+        levelBalls.addBall()
+      }
+      if(levelBallParticles.length === 0) {
+        levelBalls.updating = false
+      }
+    }
+  }
+  //ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
+
   ctx.restore()
 }
 

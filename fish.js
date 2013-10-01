@@ -14,6 +14,11 @@ function Fish(x, y, size, dir) {
   })
   this.setSize(size || 20)
 
+  this.frame = 0
+  this.ossilation = Math.sin(frame/5)
+  this.curv = 0
+
+
 
 
 
@@ -49,113 +54,11 @@ Fish.prototype.draw = function(outputCtx, o) {
   var y = 0
   var size = fish.size
 
-  // main body
+  // draw main body
+  this.drawBody()
 
-  ctx.strokeStyle = fish.bodyOutline
-  ctx.fillStyle = fish.bodyColor
-  ctx.lineWidth = 5
-  ctx.beginPath()
-
-  var t1 = this.dir
-  var t2 = this.targetDir
-  var moveDir = 1
-  var diff = 0
-  if(Math.abs(t1-t2)>Math.PI) {
-    moveDir = -1
-  }
-  if(t1 > t2) {
-    diff = t1-t2*moveDir
-  } else if(t1 < t2) {
-    diff = t2-t1*moveDir
-  }
-  var curv = this.size/15 * diff
-  curv = curv || 0
-
-  for(var i = -1; i < 2; i+=2){
-    var start = {
-      x: x + size,
-      y: y
-    }
-    var c1 = {
-      x: x + size * (14/15),
-      y: y + i*size + size/30*o + curv/3
-    }
-    var c2 = {
-      x: x - size/2,
-      y: y + i*size + size/30*o + curv/2
-    }
-    var end = {
-      x: x - size*2,
-      y: y + i*size/3 + size/15*o + curv
-    }
-    ctx.moveTo(start.x, start.y)
-    ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
-    var c3 = {
-      x: x - size * 2.5,
-      y: y + i*size/6 + size/10*o + curv
-    }
-    var c4 = {
-      x: x - size*3,
-      y: y + i*size/4 - size/15*o + curv/2
-    }
-    var end2 = {
-      x: x - size*3,
-      y: y - size/15*o + curv/3
-    }
-    ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
-  }
-  ctx.stroke()
-  ctx.fill()
-  ctx.closePath()
-
-  // inner colors
-  ctx.strokeStyle='#000'
-  ctx.lineWidth = 1
-
-  var colorSize = size - size/4
-  var colors = fish.colors
-  var thicknessSum = colors.reduce(function(sum, color){
-    return sum + color.thick * color.loaded
-  }, 0)
-  var width = colors.map(function normalize(color, i) {
-    return color.thick / thicknessSum * colorSize
-  })
-
-  for(var c = 0; c < colors.length; c++){
-    ctx.beginPath()
-    var col = colors[c].col
-    var thick = width[c]
-    var percent = colors[c].loaded
-    for (var i = -1; i < 2; i += 2) {
-      var start = {
-        x: x + colorSize,
-        y: y
-      }
-      var c1 = {
-        x: x + colorSize * (14/15),
-        y: y + i*colorSize + size/30*o + curv/3
-      }
-      var c2 = {
-        x: x-colorSize/2,
-        y: y + i*colorSize + size/30*o + curv/2
-      }
-      var end = {
-        x: x - colorSize * 2.75 ,
-        y: y + size/15*o*percent + curv
-      }
-
-      ctx.moveTo(start.x, start.y)
-      ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
-    }
-    ctx.fillStyle = col
-    ctx.fill()
-    ctx.stroke()
-    ctx.closePath()
-
-    // resize for next color drawn (outside -> in)
-    colorSize -= thick
-    if (colorSize < 0) break
-  }
+  // draw inner colors
+  this.drawColors()
 
   outputCtx.save()
   outputCtx.translate(this.x, this.y)
@@ -208,10 +111,110 @@ Fish.prototype.draw = function(outputCtx, o) {
   ctx.restore()
 
 }
+Fish.prototype.drawBody = function() {
+  var fish = this
+  var size = this.size
+  var ctx = this.ctx
+  var curv = this.curv
+  var x = 0, y = 0, o = this.ossilation
+  ctx.strokeStyle = fish.bodyOutline
+  ctx.fillStyle = fish.bodyColor
+  ctx.lineWidth = 5
+  ctx.beginPath()
+  for(var i = -1; i < 2; i+=2){
+    var start = {
+      x: x + size,
+      y: y
+    }
+    var c1 = {
+      x: x + size * (14/15),
+      y: y + i*size + size/30*o + curv/3
+    }
+    var c2 = {
+      x: x - size/2,
+      y: y + i*size + size/30*o + curv/2
+    }
+    var end = {
+      x: x - size*2,
+      y: y + i*size/3 + size/15*o + curv
+    }
+    ctx.moveTo(start.x, start.y)
+    ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
+    var c3 = {
+      x: x - size * 2.5,
+      y: y + i*size/6 + size/10*o + curv
+    }
+    var c4 = {
+      x: x - size*3,
+      y: y + i*size/4 - size/15*o + curv/2
+    }
+    var end2 = {
+      x: x - size*3,
+      y: y - size/15*o + curv/3
+    }
+    ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
+  }
+  ctx.stroke()
+  ctx.fill()
+  ctx.closePath()
+}
+Fish.prototype.drawColors = function() {
+  // inner colors
+  var fish = this
+  var size = this.size
+  var ctx = this.ctx
+  var curv = this.curv
+  var x = 0, y = 0, o = this.ossilation
+  ctx.strokeStyle='#000'
+  ctx.lineWidth = 1
+
+  var colorSize = size - size/4
+  var colors = fish.colors
+  var thicknessSum = colors.reduce(function(sum, color){
+    return sum + color.thick * color.loaded
+  }, 0)
+  var width = colors.map(function normalize(color, i) {
+    return color.thick / thicknessSum * colorSize
+  })
+
+  for(var c = 0; c < colors.length; c++){
+    ctx.beginPath()
+    var col = colors[c].col
+    var thick = width[c]
+    var percent = colors[c].loaded
+    for (var i = -1; i < 2; i += 2) {
+      var start = {
+        x: x + colorSize,
+        y: y
+      }
+      var c1 = {
+        x: x + colorSize * (14/15),
+        y: y + i*colorSize + size/30*o + curv/3
+      }
+      var c2 = {
+        x: x-colorSize/2,
+        y: y + i*colorSize + size/30*o + curv/2
+      }
+      var end = {
+        x: x - colorSize * 2.75 ,
+        y: y + size/15*o*percent + curv
+      }
+
+      ctx.moveTo(start.x, start.y)
+      ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
+    }
+    ctx.fillStyle = col
+    ctx.fill()
+    ctx.stroke()
+    ctx.closePath()
+
+    // resize for next color drawn (outside -> in)
+    colorSize -= thick
+    if (colorSize < 0) break
+  }
+}
 Fish.prototype.drawDeath = function(outputCtx) {
   var ctx = outputCtx
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
-  ctx.lineWidth = 1
   for(var i=0;i<this.deathParticles.length;i++) {
     this.deathParticles[i].draw(ctx)
   }
@@ -243,6 +246,11 @@ Fish.prototype.collide = function (fish) {
 Fish.prototype.killedBy = function(target) {
   this.dying = true
   playPop()
+  this.deathParticles = this.toParticles(target)
+}
+Fish.prototype.toParticles = function(target) {
+  var particles = []
+
   var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
   for(var i = 0; i < pixels.length; i += 36 * Math.ceil(this.size/20)) {
     var r = pixels[i]
@@ -264,10 +272,29 @@ Fish.prototype.killedBy = function(target) {
 
     var col = new Color(r, g, b)
     var dir = directionTowards({x: x, y: y}, this)
-    this.deathParticles.push(new Particle(x, y, col, target, Math.PI*Math.random()*2 - Math.PI, this.size/20))
+    particles.push(new Particle(x, y, col, target, Math.PI*Math.random()*2 - Math.PI, this.size/20))
   }
+  return particles
 }
-Fish.prototype.physics = function(ossilation){
+Fish.prototype.physics = function(){
+
+  this.ossilation = Math.sin(this.frame/5)
+  var ossilation = this.ossilation
+
+  var t1 = this.dir
+  var t2 = this.targetDir
+  var moveDir = 1
+  var diff = 0
+  if(Math.abs(t1-t2)>Math.PI) {
+    moveDir = -1
+  }
+  if(t1 > t2) {
+    diff = t1-t2*moveDir
+  } else if(t1 < t2) {
+    diff = t2-t1*moveDir
+  }
+  var curv = this.size/15 * diff
+  this.curv = curv || 0
 
   // grow inner colors
   for(var i=0;i<this.colors.length;i++) {
@@ -280,45 +307,18 @@ Fish.prototype.physics = function(ossilation){
   if(this.dying) {
     for(var i=this.deathParticles.length-1;i>=0;i--){
       var p = this.deathParticles[i]
-      var targetDir = directionTowards(p.target, p)
-
-      // this code makes the particles (mostly) end up at the target eventually
-      var t1 = p.dir
-      var t2 = targetDir
-      var arcSpeed = 0.2
-      var moveDir = 1
-      if(Math.abs(t1-t2)>Math.PI) {
-        moveDir = -1
-      }
-      if(t1 > t2) {
-        p.dir -= moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
-      } else if(t1 < t2) {
-        p.dir += moveDir * Math.min(arcSpeed, Math.abs(t1-t2))
-      }
-      if(p.dir>Math.PI){
-        p.dir = p.dir - Math.PI*2
-      }
-      if(p.dir<-Math.PI){
-        p.dir = p.dir + Math.PI*2
-      }
-
-      var dir = p.dir
-      var dist = distance(p.target, p)
-      p.x+=Math.cos(dir) * 4 + (Math.random()*2 - 1) + Math.cos(dir) * (1/(dist+1))
-      p.y+=Math.sin(dir) * 4 + (Math.random()*2 - 1) + Math.sin(dir) * (1/(dist+1))
-      p.r = dist/50
-      p.r = p.r<0?0:p.r
+      var dist = p.physics()
       if(dist < p.target.size/8+10) {
-        this.deathParticles.splice(i,1)
+      this.deathParticles.splice(i,1)
 
-        p.target.setSize(p.target.size+0.01)
-        if(this.colors.length > 0) {
-          for(var i=this.colors.length-1;i>=0;i--) {
-            this.colors[i].loaded = 0
-            p.target.colors.push(this.colors.pop())
-          }
+      p.target.setSize(p.target.size+0.01)
+      if(this.colors.length > 0) {
+        for(var i=this.colors.length-1;i>=0;i--) {
+          this.colors[i].loaded = 0
+          p.target.colors.push(this.colors.pop())
         }
       }
+    }
     }
     if (!this.deathParticles.length) {
         this.dead = true
@@ -405,6 +405,8 @@ Fish.prototype.physics = function(ossilation){
     this.x += this.velocity[0]
     this.y += this.velocity[1]
   }
+
+  this.frame++
 }
 Fish.prototype.updateInput = function(input, isTouch) {
   // remember that up is down and down is up because of coordinate system

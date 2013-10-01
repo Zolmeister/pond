@@ -2,7 +2,8 @@ function choice(arr) {
   return arr[Math.floor(Math.random()*arr.length)]
 }
 
-function randColor() {
+function randColor(prevColor) {
+  prevColor = prevColor || lastColor
 
   do {
     var color = choice(pallet)
