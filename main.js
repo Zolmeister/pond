@@ -68,6 +68,7 @@ var lastColor = new Color()
 
 var player = new Fish()
 var fishes = [player]
+var spawner = new Spawner($canv.width, $canv.height, player, fishes)
 var last = Date.now()
 var frame = 0
 
@@ -88,7 +89,6 @@ function debugSpawn(){
   fishes.push(new Fish(100,100,10 ))
 }
 window.onkeydown = function(e){
-if(e.which === 32) levelUp()
 
   var k = keymap[e.which]
   if (!k) return
@@ -125,51 +125,25 @@ var endGameParticles = []
 // level debug
 //levelBalls.addBall()
 function levelUp(){
-  levelBar.addColor()
-  levelBar.addColor()
-  levelBar.addColor()
-  levelBar.addColor()
-  levelBar.addColor()
-  levelBar.addColor()
-  levelBar.addColor()
-  levelBar.addColor()
-  levelBar.addColor()
+  for(var i=0;i<9;i++)
+    levelBar.addColor()
+
   levelBar.colors.forEach(function(col){
   col.loaded = 1
   })
   levelBar.x = levelBar.targetX
   levelBar.addColor()
-  /*player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
-  player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
-  player.colors.push({col: randColor().rgb(), thick: 4, loaded: 1})
-  player.colors.push({col: randColor().rgb(), thick: 4, loaded: 0.9})*/
 }
 function levelUp2(){
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-  levelBalls.addBall()
-  levelBalls.shift()
-
+  for(var i=0;i<9;i++){
+    levelBalls.addBall()
+    levelBalls.shift()
+  }
   levelBalls.balls.forEach(function(b){b.size = b.targetSize})
-
   levelBalls.addBall()
 }
 //setTimeout(levelUp, 100)
-setTimeout(levelUp2, 100)
+//setTimeout(levelUp2, 100)
 function draw(t) {
   requestAnimationFrame(draw)
   delta = t-last
@@ -179,6 +153,9 @@ function draw(t) {
   for(var i=0; i<fishes.length; i++) {
     fishes[i].physics()
   }
+
+  // enemy spawner
+  spawner.update()
 
   // player score
   if(player.colors.length > 5 && player.colors.every(function(col){return col.loaded >= 1})) {
@@ -234,6 +211,8 @@ function draw(t) {
     fishes[i].draw(ctx)
   }
 
+  // enemy spawner debug
+  spawner.debug()
 
   // draw level particles (static position)
   ctx.translate(player.x - $canv.width/2, player.y - $canv.height/2)
@@ -295,11 +274,10 @@ function draw(t) {
     endGameParticles[i].physics()
     endGameParticles[i].draw(ctx)
   }
-  //ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
 
   ctx.restore()
 }
 
-fishes.push(new Fish(400,200,19))
-fishes.push(new Fish(300,300,10))
+//fishes.push(new Fish(400,200,19))
+//fishes.push(new Fish(300,300,10))
 requestAnimationFrame(draw)

@@ -21,9 +21,8 @@ function Fish(x, y, size, dir) {
   // loaded percent is used for new colors that have been added and need to grow
   this.colors = [
     {col: randColor().rgb(), thick: 4, loaded: 1},
-    {col: randColor().rgb(), thick: 5, loaded: 1},
-
-  ],
+    //{col: randColor().rgb(), thick: 5, loaded: 1},
+  ]
   this.x = x || 300
   this.y = y || 200
   this.dying = false // death animation
