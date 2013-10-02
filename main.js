@@ -10,6 +10,7 @@ window.onresize = function() {
   ctx = $canv.getContext('2d')
   $canv.width = $('#canv').width()
   $canv.height = $('#canv').height()
+  init()
 }
 
 var mouseDown = false
@@ -66,7 +67,7 @@ var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,10
 var lastColor = new Color()
 
 
-var player = new Fish()
+var player = new Fish(false)
 var fishes = [player]
 var spawner = new Spawner($canv.width, $canv.height, player, fishes)
 var last = Date.now()
@@ -152,6 +153,12 @@ function draw(t) {
   // physics
   for(var i=0; i<fishes.length; i++) {
     fishes[i].physics()
+
+    // if far enough away from player, remove
+
+    if(distance(fishes[i], player) > Math.max($canv.width, $canv.height) * 2) {
+      fishes[i].dead = true
+    }
   }
 
   // enemy spawner

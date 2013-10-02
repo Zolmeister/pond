@@ -1,11 +1,11 @@
 function LevelBalls(width, height) {
   this.balls = []
   this.nextColors = Array.apply([], new Array(2)).map(function(){ return {col: randColor()}})
-  this.ballRadius = 20
+  this.ballRadius = 15
   this.width = width
   this.height = height
-  this.x = this.width - this.ballRadius * 2
-  this.y = this.ballRadius + 20
+  this.x = this.ballRadius * 2 //this.width - this.ballRadius * 2
+  this.y = this.height - this.ballRadius*2
   this.updating = false
   this.canv = document.createElement('canvas')
   this.canv.width = this.width
@@ -49,7 +49,7 @@ LevelBalls.prototype.toParticles = function(target) {
   return particles
 }
 LevelBalls.prototype.shift = function() {
-  this.y += this.height/14 + this.ballRadius
+  this.x += this.width/13 + this.ballRadius
 }
 
 LevelBalls.prototype.addBall = function() {

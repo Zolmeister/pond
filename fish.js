@@ -1,20 +1,22 @@
-function Fish(x, y, size, dir) {
+function Fish(AI, x, y, size, dir, frame) {
   var randCol = randColor()
 
   this.dir = dir || 0 // radians
+  this.AI = AI || false
   this.targetDir = dir
   this.arcSpeed = 0.07
   this.canv = document.createElement('canvas')
   this.circles = Array.apply([], new Array(6)).map(function(cir, i){
     return {
-      x: null,
-      y: null,
-      r: null
+      x: this.x,
+      y: this.y,
+      r: 1
     }
   })
+  this.AIDir = 1
   this.setSize(size || 20)
 
-  this.frame = 0
+  this.frame = frame || 0
   this.ossilation = Math.sin(frame/5)
   this.curv = 0
 
@@ -23,8 +25,8 @@ function Fish(x, y, size, dir) {
     {col: randColor().rgb(), thick: 4, loaded: 1},
     //{col: randColor().rgb(), thick: 5, loaded: 1},
   ]
-  this.x = x || 300
-  this.y = y || 200
+  this.x = x || 0
+  this.y = y || 0
   this.dying = false // death animation
   this.dead = false // remove this entity
   this.deathParticles = []
@@ -35,7 +37,7 @@ function Fish(x, y, size, dir) {
 
   this.velocity = [0, 0]
   this.accel = [0, 0]
-  this.maxSpeed = 2
+  this.maxSpeed = this.AI ? 1 : 2
 
 }
 Fish.prototype.draw = function(outputCtx, o) {
@@ -306,7 +308,7 @@ Fish.prototype.physics = function(){
       if(dist < p.target.size/8+10) {
       this.deathParticles.splice(i,1)
 
-      p.target.setSize(p.target.size+0.01)
+      p.target.setSize(p.target.size+0.001)
       if(this.colors.length > 0) {
         for(var i=this.colors.length-1;i>=0;i--) {
           this.colors[i].loaded = 0
@@ -338,6 +340,20 @@ Fish.prototype.physics = function(){
     // mouse/touch input has a target location
     if(this.targetPos) {
         this.targetDir = directionTowards(this.targetPos, this)
+    }
+
+    if(this.AI) {
+      //if(!this.tracking) {
+
+      // random walk
+      if(Math.random() < 0.01) this.AIDir *= -1 // 1% chance to change directions every frame
+      var diff = Math.random()/100 * this.AIDir
+      this.targetDir = this.targetDir + diff
+      this.targetDir %= Math.PI
+
+      this.isInput = true
+      //}
+
     }
 
     var t1 = this.dir
