@@ -2,21 +2,25 @@ function LevelBalls(width, height) {
   this.balls = []
   this.nextColors = Array.apply([], new Array(2)).map(function(){ return {col: randColor()}})
   this.ballRadius = 15
-  this.width = width
-  this.height = height
-  this.x = this.ballRadius * 2 //this.width - this.ballRadius * 2
-  this.y = this.height - this.ballRadius*2
+  this.maxWidth = width
+  this.maxHeight = height
+  this.width = this.maxWidth
+  this.height = this.ballRadius * 2
+  this.x = this.ballRadius * 2
+  this.y = this.maxHeight - this.ballRadius*2
   this.updating = false
   this.canv = document.createElement('canvas')
-  this.canv.width = this.width
-  this.canv.height = this.height
+  this.canv.width = this.maxWidth
+  this.canv.height = this.ballRadius * 2
   this.ctx = this.canv.getContext('2d')
 }
 LevelBalls.prototype.resize = function(width, height) {
-  this.width = width
-  this.height = height
+  this.maxWidth = width
+  this.maxHeight = height
+  this.width = this.maxWidth
+  this.height = this.ballRadius * 2
   this.y = this.height - this.ballRadius * 2
-  this.canv.width = this.width
+  this.canv.width = this.maxWidth
   this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
   for(var i=0;i<this.balls.length;i++){
@@ -28,7 +32,7 @@ LevelBalls.prototype.draw = function(outputCtx) {
   for(var i=0;i<this.balls.length;i++) {
     this.balls[i].draw(this.ctx)
   }
-  outputCtx.drawImage(this.canv, 0, 20)
+  outputCtx.drawImage(this.canv, 0, this.y)
 }
 LevelBalls.prototype.physics = function() {
   var cnt = 0
@@ -55,7 +59,7 @@ LevelBalls.prototype.toParticles = function(target) {
     var y = Math.floor(i/4 / this.canv.width) + Math.random() * 2 + 2
     var col = new Color(r, g, b)
     var dir = directionTowards(target, {x: x, y: y})
-    particles.push(new Particle(x, y, col, target, dir, 2, 4, 0.08))
+    particles.push(new Particle(x, this.y + y, col, target, dir, 2, 4, 0.08))
   }
   return particles
 }
@@ -65,7 +69,7 @@ LevelBalls.prototype.shift = function() {
 
 LevelBalls.prototype.addBall = function() {
   var colors =  this.nextColors
-  this.balls.push(new LevelBall(this.x, this.y - 20, colors, this.ballRadius))
+  this.balls.push(new LevelBall(this.x, this.ballRadius, colors, this.ballRadius))
 }
 
 function LevelBall(x, y, colors, r) {
