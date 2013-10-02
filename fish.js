@@ -32,12 +32,12 @@ function Fish(AI, x, y, size, dir, frame) {
   this.deathParticles = []
   this.bodyColor = randCol.rgb()
   this.bodyOutline = shadeColor(randCol, -20).rgb()
-  this.isInput = false // is the user currently pressing a button to move?
+  this.isInput = AI ? true : false // is the user currently pressing a button to move?
   this.targetPos = null // defined if user input is touch
 
   this.velocity = [0, 0]
   this.accel = [0, 0]
-  this.maxSpeed = this.AI ? 1 : 2
+  this.maxSpeed = this.AI ? 1 : 3
 
 }
 Fish.prototype.draw = function(outputCtx, o) {
@@ -242,7 +242,7 @@ Fish.prototype.collide = function (fish) {
 }
 Fish.prototype.killedBy = function(target) {
   this.dying = true
-  playPop()
+  if(!this.AI || !target.AI) playPop()
   this.deathParticles = this.toParticles(target)
 }
 Fish.prototype.toParticles = function(target) {
@@ -343,16 +343,12 @@ Fish.prototype.physics = function(){
     }
 
     if(this.AI) {
-      //if(!this.tracking) {
 
       // random walk
       if(Math.random() < 0.01) this.AIDir *= -1 // 1% chance to change directions every frame
       var diff = Math.random()/100 * this.AIDir
       this.targetDir = this.targetDir + diff
       this.targetDir %= Math.PI
-
-      this.isInput = true
-      //}
 
     }
 
@@ -413,14 +409,15 @@ Fish.prototype.physics = function(){
     }
 
     // update position vector
-    this.x += this.velocity[0]
-    this.y += this.velocity[1]
+    this.x += this.velocity[0] * Math.abs(Math.cos(this.dir))
+    this.y += this.velocity[1] * Math.abs(Math.sin(this.dir))
   }
 
   this.frame++
 }
 Fish.prototype.updateInput = function(input, isTouch) {
   // remember that up is down and down is up because of coordinate system
+  var pi = Math.PI
   var dirMap = {
     'up':         -pi/2,
     'right up':   -pi/4,
