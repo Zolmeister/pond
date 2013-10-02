@@ -23,7 +23,7 @@ function Fish(AI, x, y, size, dir, frame) {
   // loaded percent is used for new colors that have been added and need to grow
   this.colors = [
     {col: randColor().rgb(), thick: 4, loaded: 1},
-    //{col: randColor().rgb(), thick: 5, loaded: 1},
+    {col: randColor().rgb(), thick: 5, loaded: 1},
   ]
   this.x = x || 0
   this.y = y || 0
@@ -43,13 +43,15 @@ function Fish(AI, x, y, size, dir, frame) {
 Fish.prototype.draw = function(outputCtx, o) {
   if(this.dying) return this.drawDeath(outputCtx)
   var ctx = this.ctx
-  ctx.fillStyle='#444'
+  //ctx.fillStyle='#444'
   ctx.clearRect(-this.canv.width, -this.canv.height, this.canv.width*2, this.canv.height*2)
   o = o || 0
   var fish = this
   var x = 0
   var y = 0
   var size = fish.size
+
+  ctx.beginPath()
 
   // draw main body
   this.drawBody()
@@ -63,23 +65,22 @@ Fish.prototype.draw = function(outputCtx, o) {
   outputCtx.drawImage(this.canv, -this.canv.width/2 - size, -this.canv.height/2)
   outputCtx.restore()
 
-
-  // collision body
-  var ctx = outputCtx
-
-  ctx.strokeStyle = '#0f0'
-  ctx.fillStyle = '#0f0'
-  ctx.lineWidth  = 2
-  ctx.beginPath()
-  ctx.save()
-  if(!this.dying) {
-    for(var i=0;i<this.circles.length;i++) {
-      var cir = this.circles[i]
-      ctx.arc(cir.x, cir.y, cir.r, 0, 2 * Math.PI, false)
-    }
-  }
-
   if (debug) {
+      // collision body
+      var ctx = outputCtx
+
+      ctx.strokeStyle = '#0f0'
+      ctx.fillStyle = '#0f0'
+      ctx.lineWidth  = 2
+      ctx.beginPath()
+      ctx.save()
+      if(!this.dying) {
+        for(var i=0;i<this.circles.length;i++) {
+          var cir = this.circles[i]
+          ctx.arc(cir.x, cir.y, cir.r, 0, 2 * Math.PI, false)
+        }
+      }
+
     // draw collision body circles
 
     ctx.strokeStyle='#0f0'
@@ -101,11 +102,13 @@ Fish.prototype.draw = function(outputCtx, o) {
     ctx.strokeStyle='#f00'
     ctx.stroke()
     ctx.closePath()
+
+    if(this.targetPos){
+      ctx.fillRect(this.targetPos.x, this.targetPos.y, 10,10)
+    }
   }
-  if(this.targetPos){
-    ctx.fillRect(this.targetPos.x, this.targetPos.y, 10,10)
-  }
-  ctx.restore()
+
+  //ctx.restore()
 
 }
 Fish.prototype.drawBody = function() {
@@ -115,9 +118,9 @@ Fish.prototype.drawBody = function() {
   var curv = this.curv
   var x = 0, y = 0, o = this.ossilation
   ctx.strokeStyle = fish.bodyOutline
-  ctx.fillStyle = fish.bodyColor
-  ctx.lineWidth = 5
-  ctx.beginPath()
+  //ctx.fillStyle = fish.bodyColor
+  ctx.lineWidth = 4
+
   for(var i = -1; i < 2; i+=2){
     var start = {
       x: x + size,
@@ -152,8 +155,8 @@ Fish.prototype.drawBody = function() {
     ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
   }
   ctx.stroke()
-  ctx.fill()
-  ctx.closePath()
+  //ctx.fill()
+
 }
 Fish.prototype.drawColors = function() {
   // inner colors
@@ -163,7 +166,7 @@ Fish.prototype.drawColors = function() {
   var curv = this.curv
   var x = 0, y = 0, o = this.ossilation
   ctx.strokeStyle='#000'
-  ctx.lineWidth = 1
+  ctx.lineWidth = 2
 
   var colorSize = size - size/4
   var colors = fish.colors
@@ -173,6 +176,7 @@ Fish.prototype.drawColors = function() {
   var width = colors.map(function normalize(color, i) {
     return color.thick / thicknessSum * colorSize
   })
+
 
   for(var c = 0; c < colors.length; c++){
     ctx.beginPath()
@@ -201,9 +205,10 @@ Fish.prototype.drawColors = function() {
       ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
     }
     ctx.fillStyle = col
-    ctx.fill()
+    ctx.strokeStyle = col
+    //ctx.fill()
     ctx.stroke()
-    ctx.closePath()
+
 
     // resize for next color drawn (outside -> in)
     colorSize -= thick
@@ -461,8 +466,8 @@ Fish.prototype.updateInput = function(input, isTouch) {
 }
 Fish.prototype.setSize = function(size) {
   this.size = size
-  this.canv.width = this.size*5
-  this.canv.height = this.size*3
+  this.canv.width = this.size*4.5
+  this.canv.height = this.size*2.5
   this.ctx = this.canv.getContext('2d')
   this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
 

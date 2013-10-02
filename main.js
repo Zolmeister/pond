@@ -95,7 +95,7 @@ function draw() {
 
 
   // player score
-  if(player.colors.length > 5 && player.colors.every(function(col){return col.loaded >= 1})) {
+  if(player.colors.length > 4 /*&& player.colors.every(function(col){return col.loaded >= 1})*/) {
 
     // steal colors from player
     player.drawColors()
@@ -108,7 +108,7 @@ function draw() {
     }
 
     GAME.levelParticles = levelParticles.concat(newParticles)
-    var colors = player.colors.splice(0, 5)
+    var colors = player.colors.splice(0, 4)
 
   }
 
