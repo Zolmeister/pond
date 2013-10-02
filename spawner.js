@@ -6,6 +6,10 @@ function Spawner(width, height, player, fishes) {
   this.currentZone = [this.player.x, this.player.y]
   this.zones = this.getAdjacentZones().map(this.spawn.bind(this)).concat([this.currentZone])
 }
+Spawner.prototype.resize = function(width, height) {
+  this.width = width
+  this.height = height
+}
 Spawner.prototype.update = function() {
   var self = this
 

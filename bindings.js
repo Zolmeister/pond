@@ -15,9 +15,15 @@ var userInput = []
 var mouseDown = false
 
 window.onresize = function() {
+  $canv.width = window.innerWidth
+  $canv.height = window.innerHeight
+
   ctx = $canv.getContext('2d')
-  $canv.width = $('#canv').width()
-  $canv.height = $('#canv').height()
+  ctx.lineJoin = 'round'
+
+  GAME.spawner.resize($canv.width, $canv.height)
+  GAME.levelBar.resize($canv.width, $canv.height)
+  GAME.levelBalls.resize($canv.width, $canv.height)
 }
 
 $canv.onmousedown = function(e){

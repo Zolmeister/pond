@@ -12,6 +12,17 @@ function LevelBalls(width, height) {
   this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
 }
+LevelBalls.prototype.resize = function(width, height) {
+  this.width = width
+  this.height = height
+  this.y = this.height - this.ballRadius * 2
+  this.canv.width = this.width
+  this.canv.height = this.height
+  this.ctx = this.canv.getContext('2d')
+  for(var i=0;i<this.balls.length;i++){
+    this.balls[i].y = this.height - this.ballRadius*2 - 20
+  }
+}
 LevelBalls.prototype.draw = function(outputCtx) {
   this.ctx.clearRect(0, 0, this.canv.width, this.canv.height)
   for(var i=0;i<this.balls.length;i++) {

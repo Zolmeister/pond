@@ -13,6 +13,14 @@ function LevelBar(width) {
 
   this.updating = false
 }
+LevelBar.prototype.resize = function(width, height) {
+  this.width = width
+  this.canv.width = this.width
+  this.canv.height = this.height
+  this.ctx = this.canv.getContext('2d')
+  this.x = this.canv.width * this.percent
+  this.targetX = this.x
+}
 LevelBar.prototype.toParticles = function(target) {
   var particles = []
 

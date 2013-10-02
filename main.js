@@ -36,7 +36,9 @@ function draw(t) {
 
   // physics
   for(var i=0; i<fishes.length; i++) {
-    fishes[i].physics()
+    if(Math.abs(fishes[i].x - player.x) < $canv.width && Math.abs(fishes[i].y - player.y) < $canv.height) {
+      fishes[i].physics()
+    }
 
     // if far enough away from player, remove
 
@@ -95,7 +97,9 @@ function draw(t) {
 
   // draw
   for(var i=0; i<fishes.length; i++) {
-    fishes[i].draw(ctx)
+    if(Math.abs(fishes[i].x - player.x) < $canv.width && Math.abs(fishes[i].y - player.y) < $canv.height) {
+      fishes[i].draw(ctx)
+    }
   }
 
   // enemy spawner debug
@@ -201,4 +205,5 @@ function levelUp2(){
   levelBalls.addBall()
 }
 //setTimeout(levelUp, 100)
+//setTimeout(function(){GAME.levelBar.addColor()}, 10000)
 //setTimeout(levelUp2, 100)
