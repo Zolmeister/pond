@@ -1,11 +1,17 @@
 function LevelBar(width) {
   // [{col: new Color(100, 20, 100), loaded: 1}, {col: new Color(10,20, 100), loaded: 0.5}]
   this.colors = []
-  this.height = 5
+  this.height = 6
+  this.thickness = 2
   this.canv = document.createElement('canvas')
   this.canv.width = width
   this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
+  this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+  this.ctx.shadowBlur = 10
+  this.ctx.shadowOffsetY = -5
+  this.ctx.shadowOffsetX = -5
+  this.ctx.lineWidth = this.thickness
   this.percent = 0
   this.x = this.canv.width * this.percent
   this.targetX = this.x
@@ -18,6 +24,11 @@ LevelBar.prototype.resize = function(width, height) {
   this.canv.width = this.width
   this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
+  this.ctx.lineWidth = this.thickness
+  this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+  this.ctx.shadowBlur = 10
+  this.ctx.shadowOffsetY = -5
+  this.ctx.shadowOffsetX = -5
   this.x = this.canv.width * this.percent
   this.targetX = this.x
 }
@@ -80,20 +91,11 @@ LevelBar.prototype.draw = function(outputCtx) {
   })
 
   var x = 0
-  //ctx.strokeStyle = 'rgba(0, 0, 0, 0)'
-  //ctx.lineWidth = 1
-  ctx.save()
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
-  ctx.shadowBlur = 10
-  ctx.shadowOffsetY = -5
-  ctx.shadowOffsetX = -5
   for(var i=0;i<this.colors.length;i++) {
     var color = this.colors[i]
-    ctx.fillStyle = color.col.rgb()
-    ctx.fillRect(x, this.y, widths[i], this.height)
-    //ctx.strokeRect(x, this.y, widths[i], this.height)
+    ctx.strokeStyle = color.col.rgb()
+    ctx.strokeRect(x, this.y, widths[i], this.height)
     x += widths[i]
   }
-  ctx.restore()
   outputCtx.drawImage(this.canv, 0, 0)
 }

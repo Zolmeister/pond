@@ -9,12 +9,12 @@ function Particle(x, y, color, targetFish, dir, r, speed, arcSpeed) {
   this.arcSpeed = arcSpeed || 0.2
 }
 Particle.prototype.draw = function(ctx) {
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
-    ctx.lineWidth = 1
+    //ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)'
+    ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.fillStyle = this.color.rgb()
+    ctx.strokeStyle = this.color.rgb()
     ctx.arc(this.x, this.y, this.r*3, 0, 2 * Math.PI, false)
-    ctx.fill()
+    //ctx.fill()
     ctx.stroke()
 }
 Particle.prototype.physics = function() {

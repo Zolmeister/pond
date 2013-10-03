@@ -1,30 +1,33 @@
 function LevelBalls(width, height) {
   this.balls = []
   this.nextColors = Array.apply([], new Array(2)).map(function(){ return {col: randColor()}})
-  this.ballRadius = 15
+  this.ballRadius = 14
   this.maxWidth = width
   this.maxHeight = height
+  this.thickness = 2
   this.width = this.maxWidth
-  this.height = this.ballRadius * 2
+  this.height = this.ballRadius * 2 + this.thickness * 2
   this.x = this.ballRadius * 2
-  this.y = this.maxHeight - this.ballRadius*2
+  this.y = this.maxHeight - this.ballRadius * 2 - this.thickness * 4
   this.updating = false
   this.canv = document.createElement('canvas')
   this.canv.width = this.maxWidth
-  this.canv.height = this.ballRadius * 2
+  this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
+  this.ctx.lineWidth = this.thickness
 }
 LevelBalls.prototype.resize = function(width, height) {
   this.maxWidth = width
   this.maxHeight = height
   this.width = this.maxWidth
-  this.height = this.ballRadius * 2
-  this.y = this.height - this.ballRadius * 2
+  this.height = this.ballRadius * 2 + this.thickness * 2
+  this.y = this.maxHeight - this.ballRadius * 2 - this.thickness * 4
   this.canv.width = this.maxWidth
   this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
+  this.ctx.lineWidth = this.thickness
   for(var i=0;i<this.balls.length;i++){
-    this.balls[i].y = this.height - this.ballRadius*2 - 20
+    this.balls[i].x = i*(this.width/13 + this.ballRadius) + this.ballRadius * 2
   }
 }
 LevelBalls.prototype.draw = function(outputCtx) {
@@ -69,7 +72,7 @@ LevelBalls.prototype.shift = function() {
 
 LevelBalls.prototype.addBall = function() {
   var colors =  this.nextColors
-  this.balls.push(new LevelBall(this.x, this.ballRadius, colors, this.ballRadius))
+  this.balls.push(new LevelBall(this.x, this.ballRadius + this.thickness, colors, this.ballRadius))
 }
 
 function LevelBall(x, y, colors, r) {
@@ -82,22 +85,14 @@ function LevelBall(x, y, colors, r) {
 LevelBall.prototype.draw = function(ctx) {
   var width = 10
 
-  /*ctx.save()
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
-  ctx.shadowBlur = 10
-  ctx.shadowOffsetY = -5*/
-  //ctx.fillRect(this.x, this.y, 100, 100)
   for(var i=this.colors.length-1;i>=0;i--) {
     var color = this.colors[i]
-    ctx.fillStyle = color.col.rgb()
+    ctx.strokeStyle = color.col.rgb()
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.size/2*(i+1), 0, Math.PI*2)
-    ctx.closePath()
-    ctx.fill()
+    ctx.stroke()
   }
 
-
-  //ctx.restore()
 }
 LevelBall.prototype.physics = function() {
   if(this.size < this.targetSize) {

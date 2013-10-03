@@ -31,8 +31,6 @@ Spawner.prototype.update = function() {
       newZones.forEach(this.spawn.bind(this))
       this.zones = this.zones.concat(newZones)
     }
-    ctx.strokeRect(zone[0], zone[1], this.width, this.height)
-
 
     // if zone is really far from user, remove it
     if(distance({x: zone[0], y: zone[1]}, this.player) > Math.max(this.width, this.height)*2) {

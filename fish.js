@@ -43,7 +43,6 @@ function Fish(AI, x, y, size, dir, frame) {
 Fish.prototype.draw = function(outputCtx, o) {
   if(this.dying) return this.drawDeath(outputCtx)
   var ctx = this.ctx
-  //ctx.fillStyle='#444'
   ctx.clearRect(-this.canv.width, -this.canv.height, this.canv.width*2, this.canv.height*2)
   o = o || 0
   var fish = this
@@ -106,9 +105,8 @@ Fish.prototype.draw = function(outputCtx, o) {
     if(this.targetPos){
       ctx.fillRect(this.targetPos.x, this.targetPos.y, 10,10)
     }
+    ctx.restore()
   }
-
-  //ctx.restore()
 
 }
 Fish.prototype.drawBody = function() {
@@ -118,7 +116,6 @@ Fish.prototype.drawBody = function() {
   var curv = this.curv
   var x = 0, y = 0, o = this.ossilation
   ctx.strokeStyle = fish.bodyOutline
-  //ctx.fillStyle = fish.bodyColor
   ctx.lineWidth = 4
 
   for(var i = -1; i < 2; i+=2){
@@ -155,7 +152,6 @@ Fish.prototype.drawBody = function() {
     ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
   }
   ctx.stroke()
-  //ctx.fill()
 
 }
 Fish.prototype.drawColors = function() {
@@ -165,7 +161,6 @@ Fish.prototype.drawColors = function() {
   var ctx = this.ctx
   var curv = this.curv
   var x = 0, y = 0, o = this.ossilation
-  ctx.strokeStyle='#000'
   ctx.lineWidth = 2
 
   var colorSize = size - size/4
@@ -204,9 +199,8 @@ Fish.prototype.drawColors = function() {
       ctx.moveTo(start.x, start.y)
       ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
     }
-    ctx.fillStyle = col
+
     ctx.strokeStyle = col
-    //ctx.fill()
     ctx.stroke()
 
 
