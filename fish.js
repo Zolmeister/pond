@@ -40,15 +40,11 @@ function Fish(AI, x, y, size, dir, frame) {
   this.maxSpeed = this.AI ? 1 : 3
 
 }
-Fish.prototype.draw = function(outputCtx, o) {
+Fish.prototype.draw = function(outputCtx) {
   if(this.dying) return this.drawDeath(outputCtx)
   var ctx = this.ctx
   ctx.clearRect(-this.canv.width, -this.canv.height, this.canv.width*2, this.canv.height*2)
-  o = o || 0
-  var fish = this
-  var x = 0
-  var y = 0
-  var size = fish.size
+  var size = this.size
 
   ctx.beginPath()
 
@@ -58,6 +54,7 @@ Fish.prototype.draw = function(outputCtx, o) {
   // draw inner colors
   this.drawColors()
 
+  // output to main canvas
   outputCtx.save()
   outputCtx.translate(this.x, this.y)
   outputCtx.rotate(this.dir)
@@ -114,40 +111,40 @@ Fish.prototype.drawBody = function() {
   var size = this.size
   var ctx = this.ctx
   var curv = this.curv
-  var x = 0, y = 0, o = this.ossilation
+  var o = this.ossilation
   ctx.strokeStyle = fish.bodyOutline
   ctx.lineWidth = 4
 
   for(var i = -1; i < 2; i+=2){
     var start = {
-      x: x + size,
-      y: y
+      x: size,
+      y: 0
     }
     var c1 = {
-      x: x + size * (14/15),
-      y: y + i*size + size/30*o + curv/3
+      x: size * (14/15),
+      y: i*size + size/30*o + curv/3
     }
     var c2 = {
-      x: x - size/2,
-      y: y + i*size + size/30*o + curv/2
+      x: -size/2,
+      y: i*size + size/30*o + curv/2
     }
     var end = {
-      x: x - size*2,
-      y: y + i*size/3 + size/15*o + curv
+      x: -size*2,
+      y: i*size/3 + size/15*o + curv
     }
     ctx.moveTo(start.x, start.y)
     ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
     var c3 = {
-      x: x - size * 2.5,
-      y: y + i*size/6 + size/10*o + curv
+      x: -size * 2.5,
+      y: i*size/6 + size/10*o + curv
     }
     var c4 = {
-      x: x - size*3,
-      y: y + i*size/4 - size/15*o + curv/2
+      x: -size*3,
+      y: i*size/4 - size/15*o + curv/2
     }
     var end2 = {
-      x: x - size*3,
-      y: y - size/15*o + curv/3
+      x: -size*3,
+      y: -size/15*o + curv/3
     }
     ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
   }
@@ -160,7 +157,7 @@ Fish.prototype.drawColors = function() {
   var size = this.size
   var ctx = this.ctx
   var curv = this.curv
-  var x = 0, y = 0, o = this.ossilation
+  var o = this.ossilation
   ctx.lineWidth = 2
 
   var colorSize = size - size/4
@@ -180,20 +177,20 @@ Fish.prototype.drawColors = function() {
     var percent = colors[c].loaded
     for (var i = -1; i < 2; i += 2) {
       var start = {
-        x: x + colorSize,
-        y: y
+        x: colorSize,
+        y: 0
       }
       var c1 = {
-        x: x + colorSize * (14/15),
-        y: y + i*colorSize + size/30*o + curv/3
+        x: colorSize * (14/15),
+        y: i*colorSize + size/30*o + curv/3
       }
       var c2 = {
-        x: x-colorSize/2,
-        y: y + i*colorSize + size/30*o + curv/2
+        x: -colorSize/2,
+        y: i*colorSize + size/30*o + curv/2
       }
       var end = {
-        x: x - colorSize * 2.75 ,
-        y: y + size/15*o*percent + curv
+        x: -colorSize * 2.75 ,
+        y: size/15*o*percent + curv
       }
 
       ctx.moveTo(start.x, start.y)
