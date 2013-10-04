@@ -1,11 +1,6 @@
 var $canv = $('#canv')[0]
 $canv.width = window.innerWidth
 $canv.height = window.innerHeight
-
-var stats = new Stats()
-document.body.appendChild(stats.domElement)
-
-
 var ctx = $canv.getContext('2d')
 ctx.lineJoin = 'round'
 var debug =  false //true
@@ -13,6 +8,11 @@ var debug =  false //true
 var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
 var lastColor = new Color()
 var GAME = {}
+
+if(debug){
+  var stats = new Stats()
+  document.body.appendChild(stats.domElement)
+}
 
 function init() {
   GAME.player = new Fish(false)
@@ -44,14 +44,14 @@ function draw(time) {
   var levelBallParticles = GAME.levelBallParticles
   var endGameParticles = GAME.endGameParticles
 
-  stats.begin()
+  if(debug) stats.begin()
   while(lag >= MS_PER_UPDATE) {
     physics()
     lag -= MS_PER_UPDATE
   }
 
   paint()
-  stats.end()
+  if(debug) stats.end()
 
   function physics() {
     levelBarPhysics()
@@ -273,6 +273,6 @@ function levelUp2(){
   levelBalls.balls.forEach(function(b){b.size = b.targetSize})
   levelBalls.addBall()
 }
-setTimeout(levelUp, 100)
+//setTimeout(levelUp, 100)
 //setTimeout(function(){GAME.levelBar.addColor()}, 10000)
-setTimeout(levelUp2, 100)
+//setTimeout(levelUp2, 100)
