@@ -25,8 +25,14 @@ function init() {
   GAME.endGameParticles = []
 }
 
-function draw() {
+// game loop
+var MS_PER_UPDATE = 16
+var previousTime = Date.now()
+var lag = 0.0
+function draw(time) {
   var i, l, j, dist, nextStage, fish, fish2
+  lag += time - previousTime
+  previousTime = time
   stats.begin()
 
   requestAnimFrame(draw)
@@ -40,77 +46,99 @@ function draw() {
   var levelBallParticles = GAME.levelBallParticles
   var endGameParticles = GAME.endGameParticles
 
+  function levelBarPhysics() {
+    // levelBar level up
+    nextStage = levelBar.physics()
+    if(nextStage) {
+      GAME.levelBallParticles = levelBallParticles.concat(levelBar.toParticles(levelBalls))
+      levelBalls.nextColors = levelBar.colors.slice(0, 2)
+  
+      // reset levelBar
+      GAME.levelBar = new LevelBar($canv.width)
+    }
+    
+    // levelBar Particles physics
+    i = levelParticles.length
+    while(i-- > 0) {
+      dist = levelParticles[i].physics()
+      if (dist < 10) {
+        levelParticles.splice(i, 1)
+        if(!levelBar.updating) {
+          levelBar.updating = true
+          levelBar.addColor()
+        }
+        if(levelParticles.length === 0) {
+          levelBar.updating = false
+        }
+      }
+    }
+  }
+  
+  function levelBallPhysics() {
+    // levelBalls level up
+    nextStage = levelBalls.physics()
+    if(nextStage) {
+      GAME.endGameParticles = levelBalls.toParticles(player)
+  
+      // un-static position
+      for(i=0;i<GAME.endGameParticles.length;i++) {
+        GAME.endGameParticles[i].x += player.x - $canv.width/2
+        GAME.endGameParticles[i].y += player.y - $canv.height/2
+      }
+  
+      GAME.levelBalls = new LevelBalls($canv.width, $canv.height)
+    }
+    
+    i = levelBallParticles.length
+    while(i-- > 0) {
+      dist = levelBallParticles[i].physics()
+      if (dist < 10) {
+        levelBallParticles.splice(i, 1)
+        if(!levelBalls.updating) {
+          levelBalls.updating = true
+          levelBalls.addBall()
+        }
+        if(levelBallParticles.length === 0) {
+          levelBalls.updating = false
+          levelBalls.shift()
+        }
+      }
+    }
+  }
+  
+  function endGameParticlePhysics() {
+    for(i = -1, l = endGameParticles.length; ++i < l;) {
+      endGameParticles[i].physics()
+    }
+  }
+  
+  function physics() {
+    levelBarPhysics()
+    levelBallPhysics()
+    endGameParticlePhysics()
+  }
+  
   // clear and draw background
   ctx.fillStyle = '#111'
   ctx.fillRect(0, 0, $canv.width, $canv.height)
 
   // draw level particles and objects (static position)
-  nextStage = levelBar.physics()
-  if(nextStage) {
-    GAME.levelBallParticles = levelBallParticles.concat(levelBar.toParticles(levelBalls))
-    levelBalls.nextColors = levelBar.colors.slice(0, 2)
-
-    // reset levelBar
-    GAME.levelBar = new LevelBar($canv.width)
-  }
-
   levelBar.draw(ctx)
-  i = levelParticles.length
-  while(i-- > 0) {
-    dist = levelParticles[i].physics()
-    levelParticles[i].draw(ctx)
-    if (dist < 10) {
-      levelParticles.splice(i, 1)
-      if(!levelBar.updating) {
-        levelBar.updating = true
-        levelBar.addColor()
-      }
-      if(levelParticles.length === 0) {
-        levelBar.updating = false
-      }
-    }
-  }
-
-  nextStage = levelBalls.physics()
-  if(nextStage) {
-    GAME.endGameParticles = levelBalls.toParticles(player)
-
-    // un-static position
-    for(i=0;i<GAME.endGameParticles.length;i++) {
-      GAME.endGameParticles[i].x += player.x - $canv.width/2
-      GAME.endGameParticles[i].y += player.y - $canv.height/2
-    }
-
-    GAME.levelBalls = new LevelBalls($canv.width, $canv.height)
-  }
+  
+  // TODO
+    levelParticles[i].draw(ctx) // iterate levelParticles
+  // TODO
+     levelBallParticles[i].draw(ctx)
+  
   levelBalls.draw(ctx)
-  i = levelBallParticles.length
-  while(i-- > 0){
-    dist = levelBallParticles[i].physics()
-    levelBallParticles[i].draw(ctx)
-    if (dist < 10) {
-      levelBallParticles.splice(i, 1)
-      if(!levelBalls.updating) {
-        levelBalls.updating = true
-        levelBalls.addBall()
-      }
-      if(levelBallParticles.length === 0) {
-        levelBalls.updating = false
-        levelBalls.shift()
-      }
-    }
-  }
-
-
+  
   // dynamic position objects
   ctx.save()
   ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
 
   for(i = -1, l = endGameParticles.length; ++i < l;) {
-    endGameParticles[i].physics()
-    endGameParticles[i].draw(ctx)
+      endGameParticles[i].draw(ctx)
   }
-
 
   // enemy spawner
   spawner.update()
