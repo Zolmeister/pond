@@ -1,4 +1,7 @@
 function Color(r, g, b) {
+  if(r instanceof Array) {
+    return Color.apply(this, r)
+  }
   this.r = r
   this.g = g
   this.b = b

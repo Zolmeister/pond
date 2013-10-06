@@ -17,13 +17,16 @@ var mouseDown = false
 window.onresize = function() {
   $canv.width = window.innerWidth
   $canv.height = window.innerHeight
-
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
 
-  GAME.spawner.resize($canv.width, $canv.height)
-  GAME.levelBar.resize($canv.width, $canv.height)
-  GAME.levelBalls.resize($canv.width, $canv.height)
+  if(GAME.state === 'playing') {
+    GAME.spawner.resize($canv.width, $canv.height)
+    GAME.levelBar.resize($canv.width, $canv.height)
+    GAME.levelBalls.resize($canv.width, $canv.height)
+  } else {
+    drawMenu()
+  }
 }
 
 $canv.onmousedown = function(e){
