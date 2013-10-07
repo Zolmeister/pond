@@ -8,6 +8,7 @@ var debug =  false //true
 var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
 var lastColor = new Color()
 var GAME = {}
+var ASSETS = {}
 
 if(debug){
   var stats = new Stats()
@@ -249,8 +250,19 @@ window.requestAnimFrame = (function(){
     window.mozRequestAnimationFrame
 })();
 
-setTimeout(drawMenu, 100)
 
+function loadAssets(cb) {
+  var logo = new Image()
+  logo.onload = function() {
+    ASSETS.logo = this
+    cb()
+  }
+  logo.src='logo.png'
+}
+
+window.onload = function() {
+  loadAssets(drawMenu)
+}
 
 function drawMenu() {
 
@@ -258,114 +270,61 @@ function drawMenu() {
   ctx.fillStyle = '#111'
   ctx.fillRect(0, 0, $canv.width, $canv.height)
 
+  var title = {
+    width : ASSETS.logo.width,
+    height : ASSETS.logo.height,
+    minPaddingX : 100,
+    minPaddingY : 10
+  }
+
+  var button = {
+    x : $canv.width * 2/10,
+    y : $canv.height / 1.5,
+    width : $canv.width * 6/10,
+    height : $canv.height / 4
+  }
+
   // title
-  drawFancyText(ctx, 'Pond', 150, 200, 200)
+  if(title.width > $canv.width - title.minPaddingX) {
+    var scale = ($canv.width - title.minPaddingX) / title.width
+    title.width *= scale
+    title.height *= scale
+  }
+  if(title.height > $canv.height - (button.y - button.height) - title.minPaddingY) {
+    var scale = ($canv.height - ($canv.height / 1.5 - $canv.height / 4) - minPaddingY) / height
+    height *= scale
+    width *= scale
+  }
+  var x = $canv.width/2 - width/2
+  var y = $canv.height * 0.9/ 1.5 - height
+  ctx.drawImage(ASSETS.logo, x, y, width, height)
 
   // button
-  ctx.fillStyle = '#444'
-  ctx.fillRect($canv.width * 2/10, $canv.height  / 2 - $canv.height / 4 / 2, $canv.width * 6/10,  $canv.height / 4)
+
+  ctx.lineWidth = 4
+  ctx.strokeStyle = '#444'
+  roundRect(ctx, x, y, width, height, 20)
+  ctx.stroke()
+  var fontSize = $canv.width / 12
+  var text = 'Enter'
+  ctx.font = fontSize + 'px Leckerli One, cursive'
+  ctx.textAlign = 'center'
+  ctx.strokeStyle=new Color(pallet[2]).rgb()
+  ctx.strokeText(text, x + ctx.lineWidth + width/2, y + height/2 - ctx.lineWidth*2 + fontSize/2)
+  ctx.fillText(text, x + ctx.lineWidth + width/2, y + height/2 - ctx.lineWidth*2 + fontSize/2)
   //init()
 }
 
-function drawFancyText(ctx, text, size, x, y) {
-  //ctx.globalCompositeOperation = ''
-  var col1 = new Color(pallet[4])
-  ctx.strokeStyle = col1.rgb()
-  ctx.lineWidth = 6
-  ctx.font = size + 'px Leckerli One, cursive'
-
-  ctx.strokeText(text, x, y)
-  ctx.fillText(text, x, y)
-
-
-
-  ctx.font = size/2 + 'px Leckerli One, cursive'
-  ctx.strokeText('the', x-100, y - 60)
-  ctx.fillText('the', x-100, y - 60)
-  for( var i=0;i<text.length;i++) {
-    //drawFancyLetter(ctx, text[i], size, x + size * i/1.8, y)
-  }
-
-  var img = ctx.getImageData(0, 0, $canv.width, $canv.height)
-  var pixs = img.data
-  for(var px = 0; px < $canv.width*4; px+=4) {
-    var hitColor = false
-    var hitEmptyAfterColor = false
-    var filled = false
-    var startY = null
-    for(var py = 0; py < $canv.height*4; py+=4) {
-      var r = pixs[py*$canv.width + px]
-      if (r > 20) {
-        // color hit
-        if(!hitColor){
-          // first line, now we wait for the next one to interpolate
-          hitColor = true
-          startY = py
-        } else if(hitEmptyAfterColor){
-          // fill interpolated pixel
-          filled = true
-          var tx = px
-          var ty = startY + Math.floor((py - startY)/2)
-          // scan left and scan right to check for shorter distance
-          pixs[ty * $canv.width + tx + 1] = 255
-        }
-      } else if(hitColor) {
-        // empty hit after original hit
-        hitEmptyAfterColor = true
-        if(filled) {
-          filled = false
-          hitEmptyAfterColor = false
-          hitColor = false
-          startY = null
-        }
-      }
-    }
-  }
-  for(var py = 0; py < $canv.height*4; py+=4) {
-    var hitColor = false
-    var hitEmptyAfterColor = false
-    var filled = false
-    var startY = null
-    for(var px = 0; px < $canv.width*4; px+=4) {
-      var r = pixs[py*$canv.height + px]
-      if (r > 20) {
-        // color hit
-        if(!hitColor){
-          // first line, now we wait for the next one to interpolate
-          hitColor = true
-          startY = px
-        } else if(hitEmptyAfterColor){
-          // fill interpolated pixel
-          filled = true
-          var tx = startY + Math.floor((px - startY)/2)
-          var ty = py
-          // scan left and scan right to check for shorter distance
-          pixs[ty * $canv.height + tx + 1] = 255
-        }
-      } else if(hitColor) {
-        // empty hit after original hit
-        hitEmptyAfterColor = true
-        if(filled) {
-          filled = false
-          hitEmptyAfterColor = false
-          hitColor = false
-          startY = null
-        }
-      }
-    }
-  }
-  //ctx.clearRect(x-100, y-100, 400, 100)
-  ctx.putImageData(img, 0, 0)
-}
-function drawFancyLetter(ctx, letter, size, x, y) {
-  var col1 = new Color(255, 0, 100)
-  ctx.strokeStyle = col1.rgb()
-  ctx.lineWidth = 2
-  ctx.font = size + 'px Leckerli One'
-  ctx.fillText(letter, x, y)
-  ctx.strokeText(letter, x, y)
-  ctx.font = size+20 + 'px Leckerli One'
-  ctx.strokeText(letter, x-5, y+5)
+function roundRect (ctx, x, y, w, h, r) {
+  if (w < 2 * r) r = w / 2;
+  if (h < 2 * r) r = h / 2;
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y,   x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x,   y+h, r);
+  ctx.arcTo(x,   y+h, x,   y,   r);
+  ctx.arcTo(x,   y,   x+w, y,   r);
+  ctx.closePath();
 }
 
 // level debug

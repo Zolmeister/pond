@@ -30,45 +30,54 @@ window.onresize = function() {
 }
 
 $canv.onmousedown = function(e){
-  GAME.player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
-  mouseDown = true
+  if(GAME.state === 'playing') {
+    GAME.player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
+    mouseDown = true
+  }
 }
 
 $canv.onmouseup = function(e) {
-  GAME.player.updateInput([], true)
-  mouseDown = false
+  if(GAME.state === 'playing') {
+    GAME.player.updateInput([], true)
+    mouseDown = false
+  }
 }
 
 $canv.onmousemove = function(e) {
-  if(mouseDown) {
-    GAME.player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
+  if(GAME.state === 'playing') {
+    if(mouseDown) {
+      GAME.player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
+    }
   }
 }
 
 window.onkeydown = function(e){
+  if(GAME.state === 'playing') {
+    var k = keymap[e.which]
+    if (!k) return
 
-  var k = keymap[e.which]
-  if (!k) return
+    // remove from input list if it was there already
+    if(userInput.indexOf(k)!=-1) {
+      userInput.splice(userInput.indexOf(k), 1)
+    }
 
-  // remove from input list if it was there already
-  if(userInput.indexOf(k)!=-1) {
-    userInput.splice(userInput.indexOf(k), 1)
+    // add to front of input list
+    userInput.unshift(k)
+
+    GAME.player.updateInput(userInput, false)
   }
-
-  // add to front of input list
-  userInput.unshift(k)
-
-  GAME.player.updateInput(userInput, false)
 }
 
 window.onkeyup = function(e) {
-  var k = keymap[e.which]
-  if (!k) return
+  if(GAME.state === 'playing') {
+    var k = keymap[e.which]
+    if (!k) return
 
-  // remove from input list if it was there already
-  if(userInput.indexOf(k)!=-1) {
-    userInput.splice(userInput.indexOf(k), 1)
+    // remove from input list if it was there already
+    if(userInput.indexOf(k)!=-1) {
+      userInput.splice(userInput.indexOf(k), 1)
+    }
+
+    GAME.player.updateInput(userInput, false)
   }
-
-  GAME.player.updateInput(userInput, false)
 }

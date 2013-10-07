@@ -1,32 +1,33 @@
 <!DOCTYPE html>
 <html>
     <head><title>Pond</title></head>
-    <style>@import url(http://fonts.googleapis.com/css?family=Marck+Script|Pacifico|Satisfy|Leckerli+One);</style>
+    <style>
+        @font-face {
+            font-family: Leckerli One;
+            src: url('Leckerli One.ttf');
+        }
+        body {
+            margin: 0;
+            background-color: '#111'
+        }
+        #canv {
+            width: 100%;
+            height: 100%;
+            position:absolute;
+        }
+        .sound {
+            cursor: pointer;
+            color: #666;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+    </style>
     <body>
-        <span style='font-family:Leckerli One'>a</span>
-        <span style='font-family:Marck Script'>a</span>
-        <span style='font-family:Pacifico'>a</span>
-        <span style='font-family:Satisfy'>a</span>
-
+        <!-- force browser to download font -->
+        <span style='font-family: Leckerli One'></span>
         <canvas id='canv'></canvas>
         <span class='sound'>&#9835;</span>
-        <style>
-            body {
-                margin: 0;
-            }
-            #canv {
-                width: 100%;
-                height: 100%;
-                position:absolute;
-            }
-            .sound {
-                cursor: pointer;
-                color: #666;
-                position: absolute;
-                right: 10px;
-                top: 10px;
-            }
-        </style>
         <script src='http://code.jquery.com/jquery-2.0.3.min.js'></script>
         <script src='http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.js'></script>
 
