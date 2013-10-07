@@ -37,6 +37,22 @@ function distance(a, b) {
   return Math.sqrt(Math.pow(a.x-b.x, 2) + Math.pow(a.y - b.y, 2))
 }
 
+function collideBox(a, b) {
+  var y1 = a.y
+  var h1 = a.height
+  var y2 = b.y
+  var h2 = b.height
+  var x1 = a.x
+  var x2 = b.x
+  var w1 = a.width
+  var w2 = b.width
+  if (y1 + h1 < y2
+     || y1 > y2 + h2
+     || x1 + w1 < x2
+     || x1 > x2 + w2) return false
+  return true
+}
+
 function rot(x, y, dir) {
   /*var rotationMatrix = [
     [Math.cos(dir), -Math.sin(dir)],

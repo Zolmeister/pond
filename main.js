@@ -7,7 +7,12 @@ var debug =  false //true
 // color pallet // blue        l blue        l green         orange         d orange
 var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
 var lastColor = new Color()
-var GAME = {}
+var GAME = {
+  MENU: {
+    opacity: 0
+  },
+  state: 'menu'
+}
 var ASSETS = {}
 
 if(debug){
@@ -36,7 +41,11 @@ function draw(time) {
   var i, l, j, dist, nextStage, fish, fish2
   lag += time - previousTime
   previousTime = time
-  requestAnimFrame(draw)
+  if(GAME.state === 'playing'){
+    requestAnimFrame(draw)
+  } else {
+    return fadeInMenu()
+  }
 
   var player = GAME.player
   var fishes = GAME.fishes
@@ -159,6 +168,11 @@ function draw(time) {
     while(i-- > 0) {
       // cleanup dead fish - in here for performance
       if(fishes[i].dead) {
+        if(fishes[i] === player) {
+          setTimeout(function(){
+            GAME.state = 'menu'
+          }, 2000)
+        }
         fishes.splice(i, 1)
         continue
       }
@@ -261,28 +275,26 @@ function loadAssets(cb) {
 }
 
 window.onload = function() {
-  loadAssets(drawMenu)
+  loadAssets(fadeInMenu)
 }
 
-function drawMenu() {
-
-  // background
-  ctx.fillStyle = '#111'
-  ctx.fillRect(0, 0, $canv.width, $canv.height)
-
+function sizeMenu() {
   var title = {
     width : ASSETS.logo.width,
     height : ASSETS.logo.height,
     minPaddingX : 100,
-    minPaddingY : 10
+    minPaddingY : 30,
+    x: null,
+    y: null
   }
 
   var button = {
-    x : $canv.width * 2/10,
-    y : $canv.height / 1.5,
-    width : $canv.width * 6/10,
-    height : $canv.height / 4
+    x : null,
+    y : $canv.height / 1.8,
+    width : $canv.width * .5,
+    height : $canv.height / 6
   }
+  button.x = $canv.width / 2 - button.width/2
 
   // title
   if(title.width > $canv.width - title.minPaddingX) {
@@ -290,28 +302,72 @@ function drawMenu() {
     title.width *= scale
     title.height *= scale
   }
-  if(title.height > $canv.height - (button.y - button.height) - title.minPaddingY) {
-    var scale = ($canv.height - ($canv.height / 1.5 - $canv.height / 4) - minPaddingY) / height
-    height *= scale
-    width *= scale
+  if(title.height > $canv.height - button.y - title.minPaddingY*2) {
+    var scale = ($canv.height - button.y - title.minPaddingY*2) / title.height
+    title.height *= scale
+    title.width *= scale
   }
-  var x = $canv.width/2 - width/2
-  var y = $canv.height * 0.9/ 1.5 - height
-  ctx.drawImage(ASSETS.logo, x, y, width, height)
+  title.x = $canv.width/2 - title.width/2
+  title.y = button.y - title.height - title.minPaddingY
 
+  GAME.MENU.title = title
+  GAME.MENU.button = button
+}
+
+function drawMenuButton(hitting) {
+  var button = GAME.MENU.button
   // button
-
   ctx.lineWidth = 4
   ctx.strokeStyle = '#444'
-  roundRect(ctx, x, y, width, height, 20)
+  roundRect(ctx, button.x, button.y, button.width, button.height, 20)
+  ctx.fillStyle= hitting ? '#222' : '#1a1a1a'
+  ctx.fill()
   ctx.stroke()
-  var fontSize = $canv.width / 12
+  var fontSize = Math.min($canv.width / 12, $canv.height/12)
   var text = 'Enter'
   ctx.font = fontSize + 'px Leckerli One, cursive'
   ctx.textAlign = 'center'
   ctx.strokeStyle=new Color(pallet[2]).rgb()
-  ctx.strokeText(text, x + ctx.lineWidth + width/2, y + height/2 - ctx.lineWidth*2 + fontSize/2)
-  ctx.fillText(text, x + ctx.lineWidth + width/2, y + height/2 - ctx.lineWidth*2 + fontSize/2)
+  var x = button.x + ctx.lineWidth + button.width/2
+  var y = button.y + button.height/2 - ctx.lineWidth*2 + fontSize/2
+  ctx.strokeText(text, x, y)
+  ctx.fillText(text, x, y)
+}
+
+function drawMenuLogo() {
+  var title = GAME.MENU.title
+  ctx.drawImage(ASSETS.logo, title.x, title.y, title.width, title.height)
+}
+
+function fadeInMenu() {
+  GAME.state = 'menu'
+  GAME.MENU.opacity = 0
+  requestAnimFrame(menuFade)
+}
+
+function menuFade() {
+  GAME.MENU.opacity+=0.05
+  drawMenu()
+  if(GAME.MENU.opacity < 1){
+    requestAnimFrame(menuFade)
+  }
+}
+
+function drawMenu() {
+  GAME.state = 'menu'
+
+  sizeMenu()
+
+  // background
+  ctx.fillStyle = '#111'
+  ctx.fillRect(0, 0, $canv.width, $canv.height)
+
+  // set opacity
+  ctx.globalAlpha = GAME.MENU.opacity
+
+  drawMenuLogo()
+
+  drawMenuButton()
   //init()
 }
 

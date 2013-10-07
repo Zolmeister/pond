@@ -33,6 +33,16 @@ $canv.onmousedown = function(e){
   if(GAME.state === 'playing') {
     GAME.player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
     mouseDown = true
+  } else if (GAME.state === 'menu' && GAME.MENU.button) {
+    var pos = {
+      x: e.clientX,
+      y: e.clientY,
+      width: 1,
+      height: 1
+    }
+    if(collideBox(pos, GAME.MENU.button)) {
+      drawMenuButton(true)
+    }
   }
 }
 
@@ -40,6 +50,17 @@ $canv.onmouseup = function(e) {
   if(GAME.state === 'playing') {
     GAME.player.updateInput([], true)
     mouseDown = false
+  } else if (GAME.state === 'menu' && GAME.MENU.button) {
+    drawMenuButton(false)
+    var pos = {
+      x: e.clientX,
+      y: e.clientY,
+      width: 1,
+      height: 1
+    }
+    if(collideBox(pos, GAME.MENU.button)) {
+      init()
+    }
   }
 }
 
