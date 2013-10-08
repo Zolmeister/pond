@@ -29,22 +29,28 @@ window.onresize = function() {
   }
 }
 
+function eventPos(e) {
+  if (e.type.indexOf('touch') === -1){ // if its a mouse coord
+    return {x: e.pageX, y: e.pageY, width: 1, height: 1}
+  }
+
+  // touch event coord
+  if(e.type === 'touchend') return {x: 0, y: 0, width: 0, height: 0}
+  return {x: e.touches[0].pageX, y: e.touches[0].pageY, width: 1, height: 1}
+}
+
 $canv.addEventListener('mousedown', touchDown)
 $canv.addEventListener('touchstart', touchDown)
 function touchDown(e){
-  for(var k in e){ console.log('TOUCH', k, e[k])}
-  var pos = {
-      x: e.clientX,
-      y: e.clientY,
-      width: 1,
-      height: 1
-    }
+  var pos = eventPos(e)
+
   if(GAME.state === 'playing') {
-    GAME.player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
+    GAME.player.updateInput([pos.x - $canv.width/2, pos.y - $canv.height/2], true)
     mouseDown = true
   } else if (GAME.state === 'menu' && GAME.MENU.button) {
     if(collideBox(pos, GAME.MENU.button)) {
       drawMenuButton(true)
+      init()
     }
   }
   if (collideBox(pos, {
@@ -60,29 +66,22 @@ function touchDown(e){
 $canv.addEventListener('mouseup', touchUp)
 $canv.addEventListener('touchend', touchUp)
 function touchUp(e) {
+  var pos = eventPos(e)
   if(GAME.state === 'playing') {
     GAME.player.updateInput([], true)
     mouseDown = false
   } else if (GAME.state === 'menu' && GAME.MENU.button) {
     drawMenuButton(false)
-    var pos = {
-      x: e.clientX,
-      y: e.clientY,
-      width: 1,
-      height: 1
-    }
-    if(collideBox(pos, GAME.MENU.button)) {
-      init()
-    }
   }
 }
 
 $canv.addEventListener('mousemove', touchMove)
 $canv.addEventListener('touchmove', touchMove)
 function touchMove(e) {
+  var pos = eventPos(e)
   if(GAME.state === 'playing') {
     if(mouseDown) {
-      GAME.player.updateInput([e.clientX - $canv.width/2, e.clientY - $canv.height/2], true)
+      GAME.player.updateInput([pos.x - $canv.width/2, pos.y - $canv.height/2], true)
     }
   }
 }
