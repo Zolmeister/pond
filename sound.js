@@ -1,7 +1,7 @@
 var muted = false
 popSound = document.createElement('audio')
 popSound.src='drop1.ogg'
-popSound.volume = 0.8
+popSound.volume = 0.6
 bgRainSound = document.createElement('audio')
 bgRainSound.src='bg1.ogg'
 bgRainSound.loop = true
@@ -16,7 +16,7 @@ function toggleMute(){
     localStorage.muted = 'true'
     drawSoundControl()
   } else {
-    popSound.volume = 0.8
+    popSound.volume = 0.6
     bgRainSound.volume = 1
     muted = false
     localStorage.muted = 'false'

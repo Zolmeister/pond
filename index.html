@@ -2,26 +2,16 @@
 <html>
     <head><title>Pond</title></head>
     <style>
-        @font-face {
-            font-family: Leckerli One;
-            src: url('Leckerli One.ttf');
-        }
         body {
             margin: 0;
             background-color: #111
         }
-        #canv {
-            width: 100%;
-            height: 100%;
-            position:absolute;
+        canvas {
+            position: absolute;
         }
     </style>
     <body>
-        <!-- force browser to download font -->
-        <span style='font-family: Leckerli One'></span>
-        <canvas id='canv'></canvas>
-        <script src='http://code.jquery.com/jquery-2.0.3.min.js'></script>
-        <script src='http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.js'></script>
+        <script src='stats.js'></script>
 
         <script src='util.js'></script>
         <script src='sound.js'></script>
@@ -33,5 +23,23 @@
         <script src='color.js'></script>
         <script src='main.js'></script>
         <script src='bindings.js'></script>
+        <!--<script>
+            canv = document.createElement('canvas')
+            canv.width = window.innerWidth
+            canv.height = window.innerHeight
+            ctx = canv.getContext('2d')
+            ctx.fillStyle='#666'
+            ctx.fillRect(0, 0, 100, 100)
+            document.body.appendChild(canv)
+            canv.addEventListener('touchstart', function(e){
+                for(var k in e){ console.log('TOUCH', k, e[k])}
+            })
+            canv.addEventListener('touchmove', function(e){
+                for(var k in e){ console.log('TOUCH', k, e[k])}
+            })
+            canv.addEventListener('touchend', function(e){
+                for(var k in e){ console.log('TOUCH', k, e[k])}
+            })
+        </script>-->
     </body>
 </html

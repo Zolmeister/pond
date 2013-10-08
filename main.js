@@ -1,24 +1,34 @@
-var $canv = $('#canv')[0]
-$canv.width = window.innerWidth
-$canv.height = window.innerHeight
-var ctx = $canv.getContext('2d')
-ctx.lineJoin = 'round'
-var debug =  false //true
-// color pallet // blue        l blue        l green         orange         d orange
-var pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
-var lastColor = new Color()
-var GAME = {
-  MENU: {
-    opacity: 0
-  },
-  state: 'menu'
-}
-var ASSETS = {}
+function setGlobals() {
+  $canv = document.createElement('canvas')
+  $canv.width = window.innerWidth
+  $canv.height = window.innerHeight
+  document.body.appendChild($canv)
+  ctx = $canv.getContext('2d')
+  ctx.lineJoin = 'round'
+  debug =  false //true
+  // color pallet // blue        l blue        l green         orange         d orange
+  pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
+  lastColor = new Color()
+  GAME = {
+    MENU: {
+      opacity: 1
+    },
+    state: 'menu'
+  }
+  ASSETS = {}
 
-if(debug){
-  var stats = new Stats()
-  document.body.appendChild(stats.domElement)
+  if(debug){
+    stats = new Stats()
+    document.body.appendChild(stats.domElement)
+  }
+  // game loop
+  MS_PER_UPDATE = 16
+  previousTime = 0.0
+  lag = 0.0
 }
+
+setGlobals()
+loadAssets(fadeInMenu)
 
 function init() {
   GAME.state = 'playing'
@@ -33,10 +43,6 @@ function init() {
   requestAnimFrame(draw)
 }
 
-// game loop
-var MS_PER_UPDATE = 16
-var previousTime = 0.0
-var lag = 0.0
 function draw(time) {
   var i, l, j, dist, nextStage, fish, fish2
   lag += time - previousTime
@@ -271,7 +277,8 @@ function loadAssets(cb) {
   var imgs = [
     { name: 'logo', src: 'logo.png' },
     { name: 'soundOn', src: 'sound-on.png' },
-    { name: 'soundOff', src: 'sound-off.png' }
+    { name: 'soundOff', src: 'sound-off.png' },
+    {name: 'enter', src: 'enter.png'}
   ]
 
   function process() {
@@ -289,10 +296,6 @@ function loadAssets(cb) {
   }
 
   process()
-}
-
-window.onload = function() {
-  loadAssets(fadeInMenu)
 }
 
 function sizeMenu() {
@@ -340,15 +343,17 @@ function drawMenuButton(hitting) {
   ctx.fillStyle= hitting ? '#222' : '#1a1a1a'
   ctx.fill()
   ctx.stroke()
-  var fontSize = Math.min($canv.width / 12, $canv.height/12)
-  var text = 'Enter'
-  ctx.font = fontSize + 'px Leckerli One, cursive'
-  ctx.textAlign = 'center'
-  ctx.strokeStyle=new Color(pallet[2]).rgb()
-  var x = button.x + ctx.lineWidth + button.width/2
-  var y = button.y + button.height/2 - ctx.lineWidth*2 + fontSize/2
-  ctx.strokeText(text, x, y)
-  ctx.fillText(text, x, y)
+  /*if(ASSETS.enter.width > button.width - 10) {
+    var scale = (button.width - 10) / ASSETS.enter.width
+    button.width *= scale
+    button.height *= scale
+  }
+  if(ASSETS.enter.height > button.height - 10) {
+    var scale = (button.height - 10) / ASSETS.enter.height
+    ASSETS.enter.height *= scale
+    ASSETS.enter.width *= scale
+  }*/
+  ctx.drawImage(ASSETS.enter, button.x + button.width/2 - ASSETS.enter.width/2, button.y + button.height/2 - ASSETS.enter.height/2)
 }
 
 function drawMenuLogo() {
@@ -358,8 +363,9 @@ function drawMenuLogo() {
 
 function fadeInMenu() {
   GAME.state = 'menu'
-  GAME.MENU.opacity = 0
-  requestAnimFrame(menuFade)
+  //GAME.MENU.opacity = 0
+  //requestAnimFrame(menuFade)
+  drawMenu()
 }
 
 function menuFade() {
