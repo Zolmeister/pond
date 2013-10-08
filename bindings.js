@@ -42,6 +42,13 @@ $canv.onmousedown = function(e){
     }
     if(collideBox(pos, GAME.MENU.button)) {
       drawMenuButton(true)
+    } else if (collideBox(pos, {
+      x: $canv.width - 25,
+      y: 10,
+      width: 16,
+      height: 22
+    })){
+      toggleMute()
     }
   }
 }

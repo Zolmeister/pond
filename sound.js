@@ -7,23 +7,32 @@ bgRainSound.src='bg1.ogg'
 bgRainSound.loop = true
 bgRainSound.play()
 if(localStorage.muted === 'true') toggleMute()
-$('.sound').bind('click', toggleMute)
+//$('.sound').bind('click', toggleMute)
 function toggleMute(){
   if(!muted) {
     popSound.volume = 0
     bgRainSound.volume = 0
     muted = true
-    $('.sound').html('&#9834;')
     localStorage.muted = 'true'
+    drawSoundControl()
   } else {
     popSound.volume = 0.8
     bgRainSound.volume = 1
     muted = false
-    $('.sound').html('&#9835;')
     localStorage.muted = 'false'
+    drawSoundControl()
   }
 }
 
 function playPop() {
   popSound.play()
+}
+
+function drawSoundControl() {
+  if(typeof ctx === 'undefined') return
+  ctx.clearRect($canv.width - 25, 10, 16, 22)
+  if(muted)
+    ctx.drawImage(ASSETS.soundOff, $canv.width - 25, 10)
+  else
+    ctx.drawImage(ASSETS.soundOn, $canv.width - 25, 10)
 }

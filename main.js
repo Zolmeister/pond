@@ -94,6 +94,8 @@ function draw(time) {
     paintEndGameParticles()
     paintFish()
     ctx.restore()
+
+    drawSoundControl()
   }
 
   function levelBarPhysics() {
@@ -171,7 +173,7 @@ function draw(time) {
         if(fishes[i] === player) {
           setTimeout(function(){
             GAME.state = 'menu'
-          }, 2000)
+          }, 5000)
         }
         fishes.splice(i, 1)
         continue
@@ -266,12 +268,27 @@ window.requestAnimFrame = (function(){
 
 
 function loadAssets(cb) {
-  var logo = new Image()
-  logo.onload = function() {
-    ASSETS.logo = this
-    cb()
+  var imgs = [
+    { name: 'logo', src: 'logo.png' },
+    { name: 'soundOn', src: 'sound-on.png' },
+    { name: 'soundOff', src: 'sound-off.png' }
+  ]
+
+  function process() {
+    var next = imgs.pop()
+    if(next) {
+      var img = new Image()
+      img.onload = function() {
+        ASSETS[next.name] = this
+        process()
+      }
+      img.src = next.src
+    } else {
+      cb()
+    }
   }
-  logo.src='logo.png'
+
+  process()
 }
 
 window.onload = function() {
@@ -368,7 +385,9 @@ function drawMenu() {
   drawMenuLogo()
 
   drawMenuButton()
-  //init()
+
+
+  drawSoundControl()
 }
 
 function roundRect (ctx, x, y, w, h, r) {
