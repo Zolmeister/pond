@@ -23,7 +23,7 @@ function Fish(AI, x, y, size, dir, frame) {
   // loaded percent is used for new colors that have been added and need to grow
   this.colors = [
     {col: randColor().rgb(), thick: 4, loaded: 1},
-    {col: randColor().rgb(), thick: 5, loaded: 1},
+    //{col: randColor().rgb(), thick: 5, loaded: 1},
   ]
   this.x = x || 0
   this.y = y || 0
@@ -31,7 +31,7 @@ function Fish(AI, x, y, size, dir, frame) {
   this.dead = false // remove this entity
   this.deathParticles = []
   this.bodyColor = randCol.rgb()
-  this.bodyOutline = shadeColor(randCol, -20).rgb()
+  this.bodyOutline = randCol.rgb() //shadeColor(randCol, -20).rgb()
   this.isInput = AI ? true : false // is the user currently pressing a button to move?
   this.targetPos = null // defined if user input is touch
 
@@ -245,7 +245,7 @@ Fish.prototype.toParticles = function(target) {
   var particles = []
 
   var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
-  for(var i = 0; i < pixels.length; i += 36 * Math.ceil(this.size/20)) {
+  for(var i = 0; i < pixels.length; i += 36 * Math.ceil(this.size/20) * (isMobile ? 6 : 1)) {
     var r = pixels[i]
     var g = pixels[i + 1]
     var b = pixels[i + 2]
@@ -302,16 +302,16 @@ Fish.prototype.physics = function(){
       var p = this.deathParticles[i]
       var dist = p.physics()
       if(dist < p.target.size/8+10) {
-      this.deathParticles.splice(i,1)
+        this.deathParticles.splice(i,1)
 
-      p.target.setSize(p.target.size+0.001)
-      if(this.colors.length > 0) {
-        for(var i=this.colors.length-1;i>=0;i--) {
-          this.colors[i].loaded = 0
-          p.target.colors.push(this.colors.pop())
+        p.target.setSize(p.target.size+0.001 * (isMobile ? 6 : 1))
+        if(this.colors.length > 0) {
+          for(var i=this.colors.length-1;i>=0;i--) {
+            this.colors[i].loaded = 0
+            p.target.colors.push(this.colors.pop())
+          }
         }
       }
-    }
     }
     if (!this.deathParticles.length) {
         this.dead = true

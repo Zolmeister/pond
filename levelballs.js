@@ -45,26 +45,7 @@ LevelBalls.prototype.physics = function() {
   return cnt === 10
 }
 LevelBalls.prototype.toParticles = function(target) {
-  var particles = []
-
-  var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
-  for(var i = 0; i < pixels.length; i += 36*10) {
-    var r = pixels[i]
-    var g = pixels[i + 1]
-    var b = pixels[i + 2]
-
-    // black pixel - no data
-    if(!r && !g && !b){
-      continue
-    }
-
-    var x = i/4 % this.canv.width
-    var y = Math.floor(i/4 / this.canv.width) + Math.random() * 2 + 2
-    var col = new Color(r, g, b)
-    var dir = directionTowards(target, {x: x, y: y})
-    particles.push(new Particle(x, this.y + y, col, target, dir, 2, 4, 0.08))
-  }
-  return particles
+  return particalize.call(this, target, this.y, 4, 0.08)
 }
 LevelBalls.prototype.shift = function() {
   this.x += this.width/13 + this.ballRadius

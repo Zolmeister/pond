@@ -24,6 +24,11 @@ app.get('/', function(req, res){
 	res.sendfile('index.html');
 });
 
+app.get('/log', function(req, res){
+  console.log(req.param('l'))
+  res.end()
+})
+
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });

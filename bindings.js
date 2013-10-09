@@ -13,6 +13,7 @@ var keymap = {
 
 var userInput = []
 var mouseDown = false
+var initializeOnUp = false
 
 window.onresize = function() {
   $canv.width = window.innerWidth
@@ -36,28 +37,28 @@ function eventPos(e) {
 
   // touch event coord
   if(e.type === 'touchend') return {x: 0, y: 0, width: 0, height: 0}
-  return {x: e.touches[0].pageX, y: e.touches[0].pageY, width: 1, height: 1}
+  return {x: e.touches[0].pageX - 35, y: e.touches[0].pageY - 35, width: 70, height: 70}
 }
 
 $canv.addEventListener('mousedown', touchDown)
 $canv.addEventListener('touchstart', touchDown)
 function touchDown(e){
+  e.preventDefault()
   var pos = eventPos(e)
-
   if(GAME.state === 'playing') {
     GAME.player.updateInput([pos.x - $canv.width/2, pos.y - $canv.height/2], true)
     mouseDown = true
   } else if (GAME.state === 'menu' && GAME.MENU.button) {
     if(collideBox(pos, GAME.MENU.button)) {
       drawMenuButton(true)
-      init()
+      initializeOnUp = true
     }
   }
   if (collideBox(pos, {
     x: $canv.width - 25,
     y: 10,
-    width: 16,
-    height: 22
+    width: 20,
+    height: 26
   })){
     toggleMute()
   }
@@ -66,21 +67,28 @@ function touchDown(e){
 $canv.addEventListener('mouseup', touchUp)
 $canv.addEventListener('touchend', touchUp)
 function touchUp(e) {
+  e.preventDefault()
   var pos = eventPos(e)
   if(GAME.state === 'playing') {
     GAME.player.updateInput([], true)
     mouseDown = false
   } else if (GAME.state === 'menu' && GAME.MENU.button) {
-    drawMenuButton(false)
+    drawMenuButton(initializeOnUp)
+    if(initializeOnUp){
+      init()
+      initializeOnUp = false
+    }
   }
 }
 
 $canv.addEventListener('mousemove', touchMove)
 $canv.addEventListener('touchmove', touchMove)
 function touchMove(e) {
+  e.preventDefault()
   var pos = eventPos(e)
   if(GAME.state === 'playing') {
     if(mouseDown) {
+
       GAME.player.updateInput([pos.x - $canv.width/2, pos.y - $canv.height/2], true)
     }
   }

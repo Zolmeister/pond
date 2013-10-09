@@ -2,15 +2,18 @@ function LevelBar(width) {
   // [{col: new Color(100, 20, 100), loaded: 1}, {col: new Color(10,20, 100), loaded: 0.5}]
   this.colors = []
   this.height = 6
+  this.width = width
   this.thickness = 2
   this.canv = document.createElement('canvas')
-  this.canv.width = width
+  this.canv.width = this.width
   this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
-  this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
-  this.ctx.shadowBlur = 10
-  this.ctx.shadowOffsetY = -5
-  this.ctx.shadowOffsetX = -5
+  if(!isMobile) {
+    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+    this.ctx.shadowBlur = 10
+    this.ctx.shadowOffsetY = -5
+    this.ctx.shadowOffsetX = -5
+  }
   this.ctx.lineWidth = this.thickness
   this.percent = 0
   this.x = this.canv.width * this.percent
@@ -25,34 +28,17 @@ LevelBar.prototype.resize = function(width, height) {
   this.canv.height = this.height
   this.ctx = this.canv.getContext('2d')
   this.ctx.lineWidth = this.thickness
-  this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
-  this.ctx.shadowBlur = 10
-  this.ctx.shadowOffsetY = -5
-  this.ctx.shadowOffsetX = -5
+  if(!isMobile) {
+    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)'
+    this.ctx.shadowBlur = 10
+    this.ctx.shadowOffsetY = -5
+    this.ctx.shadowOffsetX = -5
+  }
   this.x = this.canv.width * this.percent
   this.targetX = this.x
 }
 LevelBar.prototype.toParticles = function(target) {
-  var particles = []
-
-  var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
-  for(var i = 0; i < pixels.length; i += 36*10) {
-    var r = pixels[i]
-    var g = pixels[i + 1]
-    var b = pixels[i + 2]
-
-    // black pixel - no data
-    if(!r && !g && !b){
-      continue
-    }
-
-    var x = i/4 % this.canv.width
-    var y = Math.floor(i/4 / this.canv.width) + Math.random() * 2 + 2
-    var col = new Color(r, g, b)
-    var dir = directionTowards(target, {x: x, y: y})
-    particles.push(new Particle(x, y, col, target, dir, 2, 10, 0.6))
-  }
-  return particles
+  return particalize.call(this, target, 0, 10, 0.6)
 }
 LevelBar.prototype.addColor = function() {
   var color = randColor(this.colors[this.colors.length-1])
@@ -81,6 +67,7 @@ LevelBar.prototype.physics = function() {
 }
 LevelBar.prototype.draw = function(outputCtx) {
   var ctx = this.ctx
+  if(isMobile) ctx.clearRect(0, 0, this.width, this.height)
   if(!this.colors.length) return
   var widthSum = this.colors.reduce(function(sum, color){
     return sum + color.loaded

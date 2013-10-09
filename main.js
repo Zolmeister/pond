@@ -6,6 +6,7 @@ function setGlobals() {
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
   debug =  false //true
+  isMobile = false
   // color pallet // blue        l blue        l green         orange         d orange
   pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
   lastColor = new Color()
@@ -31,15 +32,22 @@ setGlobals()
 loadAssets(fadeInMenu)
 
 function init() {
+  log('state')
   GAME.state = 'playing'
+  log('player')
   GAME.player = new Fish(false)
+  log('fishes')
   GAME.fishes = [GAME.player]
+  log('spawner')
   GAME.spawner = new Spawner($canv.width, $canv.height, GAME.player, GAME.fishes)
+  log('bar')
   GAME.levelParticles = []
   GAME.levelBar = new LevelBar($canv.width)
+  log('balls')
   GAME.levelBalls = new LevelBalls($canv.width, $canv.height)
   GAME.levelBallParticles = []
   GAME.endGameParticles = []
+  log('draw')
   requestAnimFrame(draw)
 }
 
@@ -63,9 +71,16 @@ function draw(time) {
   var endGameParticles = GAME.endGameParticles
 
   if(debug) stats.begin()
-  while(lag >= MS_PER_UPDATE) {
+  var MAX_CYCLES = 15
+  while(lag >= MS_PER_UPDATE && MAX_CYCLES) {
     physics()
     lag -= MS_PER_UPDATE
+    MAX_CYCLES--
+  }
+
+  // if 5 frames behind, jump
+  if(lag/MS_PER_UPDATE > 75) {
+    lag = 0.0
   }
 
   paint()
@@ -317,16 +332,9 @@ function sizeMenu() {
   button.x = $canv.width / 2 - button.width/2
 
   // title
-  if(title.width > $canv.width - title.minPaddingX) {
-    var scale = ($canv.width - title.minPaddingX) / title.width
-    title.width *= scale
-    title.height *= scale
-  }
-  if(title.height > $canv.height - button.y - title.minPaddingY*2) {
-    var scale = ($canv.height - button.y - title.minPaddingY*2) / title.height
-    title.height *= scale
-    title.width *= scale
-  }
+  var scale = scaleSize(title.width, title.height, $canv.width - title.minPaddingX, $canv.height - button.y - title.minPaddingY*2)
+  title.width *= scale
+  title.height *= scale
   title.x = $canv.width/2 - title.width/2
   title.y = button.y - title.height - title.minPaddingY
 
@@ -343,17 +351,25 @@ function drawMenuButton(hitting) {
   ctx.fillStyle= hitting ? '#222' : '#1a1a1a'
   ctx.fill()
   ctx.stroke()
-  /*if(ASSETS.enter.width > button.width - 10) {
-    var scale = (button.width - 10) / ASSETS.enter.width
-    button.width *= scale
-    button.height *= scale
+  var width = ASSETS.enter.width
+  var height = ASSETS.enter.height
+  var scale = scaleSize(width, height, button.width - 5, button.height - 5)
+  width *= scale
+  height *= scale
+  var x = button.x + button.width/2 - width/2
+  var y = button.y + button.height/2 - height/2
+  ctx.drawImage(ASSETS.enter, x, y, width, height)
+}
+
+// scale down w1 and h1 to fit inside w2 and h2 retaining aspect ratio
+function scaleSize(w1, h1, w2, h2) {
+  function scale(v1, v2) {
+    if(v1 > v2) {
+      return v2/v1
+    }
+    return 1
   }
-  if(ASSETS.enter.height > button.height - 10) {
-    var scale = (button.height - 10) / ASSETS.enter.height
-    ASSETS.enter.height *= scale
-    ASSETS.enter.width *= scale
-  }*/
-  ctx.drawImage(ASSETS.enter, button.x + button.width/2 - ASSETS.enter.width/2, button.y + button.height/2 - ASSETS.enter.height/2)
+  return Math.min(scale(w1, w2), scale(h1, h2))
 }
 
 function drawMenuLogo() {
@@ -410,9 +426,8 @@ function roundRect (ctx, x, y, w, h, r) {
 
 // level debug
 //levelBalls.addBall()
-var levelBar = GAME.levelBar
-var levelBalls = GAME.levelBalls
 function levelUp(){
+  var levelBar = GAME.levelBar
   for(var i=0;i<9;i++)
     levelBar.addColor()
 
@@ -423,6 +438,7 @@ function levelUp(){
   levelBar.addColor()
 }
 function levelUp2(){
+  var levelBalls = GAME.levelBalls
   for(var i=0;i<8;i++){
     levelBalls.addBall()
     levelBalls.shift()
@@ -430,6 +446,6 @@ function levelUp2(){
   levelBalls.balls.forEach(function(b){b.size = b.targetSize})
   levelBalls.addBall()
 }
-//setTimeout(levelUp, 100)
+//setTimeout(levelUp, 3000)
 //setTimeout(function(){GAME.levelBar.addColor()}, 10000)
-//setTimeout(levelUp2, 100)
+//setTimeout(levelUp2, 3000)

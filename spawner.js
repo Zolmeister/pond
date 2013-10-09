@@ -41,7 +41,7 @@ Spawner.prototype.update = function() {
 }
 Spawner.prototype.spawn = function(zone) {
 
-  // spawn 1-4  fish per 500sqpx, maybe larger maybe smaller than player
+  // spawn 1-3  fish per 500sqpx, maybe larger maybe smaller than player
   // 0.5 chance that it will be bigger/smaller
   var mult = this.width*this.height/(500*500)
   for(var i=0, l=(Math.floor(Math.random()*3) + 1) * mult;i<l;i++) {
