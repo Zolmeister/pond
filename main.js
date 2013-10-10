@@ -378,15 +378,19 @@ function drawMenuLogo() {
 }
 
 function fadeInMenu() {
+
   GAME.state = 'menu'
-  //GAME.MENU.opacity = 0
-  //requestAnimFrame(menuFade)
-  drawMenu()
+  GAME.MENU.opacity = 0
+  requestAnimFrame(menuFade)
+  //drawMenu()
 }
 
 function menuFade() {
-  GAME.MENU.opacity+=0.05
+  GAME.MENU.opacity+=0.02
   drawMenu()
+  var alpha = 1-GAME.MENU.opacity
+  ctx.fillStyle = 'rgba(17,17,17,'+(alpha > 0 ? alpha : 0)+')'
+  ctx.fillRect(0, 0, $canv.width, $canv.height)
   if(GAME.MENU.opacity < 1){
     requestAnimFrame(menuFade)
   }
@@ -402,7 +406,7 @@ function drawMenu() {
   ctx.fillRect(0, 0, $canv.width, $canv.height)
 
   // set opacity
-  ctx.globalAlpha = GAME.MENU.opacity
+  //ctx.globalAlpha = GAME.MENU.opacity
 
   drawMenuLogo()
 
