@@ -20,7 +20,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-app.get('/', function(req, res){
+app.all('/', function(req, res){
 	res.sendfile('index.html');
 });
 
