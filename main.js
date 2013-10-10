@@ -391,13 +391,12 @@ function menuFade() {
   var alpha = 1-GAME.MENU.opacity
   ctx.fillStyle = 'rgba(17,17,17,'+(alpha > 0 ? alpha : 0)+')'
   ctx.fillRect(0, 0, $canv.width, $canv.height)
-  if(GAME.MENU.opacity < 1){
+  if(GAME.MENU.opacity < 1 && GAME.state === 'menu'){
     requestAnimFrame(menuFade)
   }
 }
 
 function drawMenu() {
-  GAME.state = 'menu'
 
   sizeMenu()
 

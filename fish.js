@@ -170,7 +170,7 @@ Fish.prototype.drawColors = function() {
   })
 
 
-  for(var c = 0; c < colors.length; c++){
+  for(var c = 0, l=colors.length; c < l; c++){
     ctx.beginPath()
     var col = colors[c].col
     var thick = width[c]
@@ -215,20 +215,22 @@ Fish.prototype.drawDeath = function(outputCtx) {
 Fish.prototype.collide = function (fish) {
 
   // the fish has been killed and is being removed
-  if (this.dying || fish.dying) {
+  if (this.dying || fish.dying || distance(this, fish) > this.size * 5 + fish.size*5) {
     return false
   }
 
   // there are 6 circles that make up the collision box of each fish
   // check if they collide
-  for (var i=0;i<this.circles.length;i++) {
-    var c1 = this.circles[i]
+  var c1, c2
+  for (var i=-1, l = this.circles.length; ++i<l;) {
+    c1 = this.circles[i]
 
-    for (var j=0;j<fish.circles.length;j++) {
-      var c2 = fish.circles[j]
+    for (var j=-1, n = fish.circles.length; ++j < n;) {
+      c2 = fish.circles[j]
 
       // check if they touch
-      if ( Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2) <= Math.pow(c2.r + c1.r, 2)) {
+      if(distance(c1, c2) <= c2.r + c1.r) {
+      //if ( Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2) <= Math.pow(c2.r + c1.r, 2)) {
         return true
       }
     }
@@ -290,7 +292,7 @@ Fish.prototype.physics = function(){
   this.curv = curv || 0
 
   // grow inner colors
-  for(var i=0;i<this.colors.length;i++) {
+  for(var i=0, l=this.colors.length; i<l; i++) {
       if(this.colors[i].loaded < 1) {
           this.colors[i].loaded += 0.01
       }
@@ -318,7 +320,7 @@ Fish.prototype.physics = function(){
     }
   } else {
     // update collision circles
-    for(var i=0;i<this.circles.length;i++) {
+    for(var i=0, l=this.circles.length;i<l;i++) {
       var cir = this.circles[i]
       var relativePosition = this.circleMap[i]
       var pos = rot(relativePosition[0], relativePosition[1]*ossilation, this.dir)
