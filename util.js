@@ -1,3 +1,9 @@
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame
+})();
+
 function log(s){
     var xmlHttp = null;
     xmlHttp = new XMLHttpRequest();
@@ -6,6 +12,7 @@ function log(s){
     return xmlHttp.responseText;
 
 }
+
 function choice(arr) {
   return arr[Math.floor(Math.random()*arr.length)]
 }
@@ -38,7 +45,7 @@ function shadeColor(col, percent) {
 }
 
 function directionTowards(a, b) {
-  return Math.atan2( a.y-b.y, a.x-b.x)
+  return Math.atan2(a.y-b.y, a.x-b.x)
 }
 
 function distance(a, b) {
@@ -46,18 +53,10 @@ function distance(a, b) {
 }
 
 function collideBox(a, b) {
-  var y1 = a.y
-  var h1 = a.height
-  var y2 = b.y
-  var h2 = b.height
-  var x1 = a.x
-  var x2 = b.x
-  var w1 = a.width
-  var w2 = b.width
-  if (y1 + h1 < y2
-     || y1 > y2 + h2
-     || x1 + w1 < x2
-     || x1 > x2 + w2) return false
+  if (a.y + a.height < b.y
+     || a.y > b.y + b.height
+     || a.x + a.width < b.x
+     || a.x > b.x + b.width) return false
   return true
 }
 
@@ -96,4 +95,27 @@ function particalize(target, yOffset, speed, arcSpeed) {
     particles.push(new Particle(x, yOffset + y, col, target, dir, 2, speed, arcSpeed))
   }
   return particles
+}
+
+// scale down w1 and h1 to fit inside w2 and h2 retaining aspect ratio
+function scaleSize(w1, h1, w2, h2) {
+  function scale(v1, v2) {
+    if(v1 > v2) {
+      return v2/v1
+    }
+    return 1
+  }
+  return Math.min(scale(w1, w2), scale(h1, h2))
+}
+
+function roundRect (ctx, x, y, w, h, r) {
+  if (w < 2 * r) r = w / 2;
+  if (h < 2 * r) r = h / 2;
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y,   x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x,   y+h, r);
+  ctx.arcTo(x,   y+h, x,   y,   r);
+  ctx.arcTo(x,   y,   x+w, y,   r);
+  ctx.closePath();
 }

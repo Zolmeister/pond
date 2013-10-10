@@ -13,6 +13,7 @@ function Fish(AI, x, y, size, dir, frame) {
       r: 1
     }
   })
+
   this.AIDir = 1
   this.setSize(size || 20)
 
@@ -22,18 +23,22 @@ function Fish(AI, x, y, size, dir, frame) {
 
   // loaded percent is used for new colors that have been added and need to grow
   this.colors = [
-    {col: randColor().rgb(), thick: 4, loaded: 1},
-    //{col: randColor().rgb(), thick: 5, loaded: 1},
+    {col: randColor().rgb(), thick: 4, loaded: 1}
   ]
+
   this.x = x || 0
   this.y = y || 0
   this.dying = false // death animation
   this.dead = false // remove this entity
   this.deathParticles = []
   this.bodyColor = randCol.rgb()
-  this.bodyOutline = randCol.rgb() //shadeColor(randCol, -20).rgb()
-  this.isInput = AI ? true : false // is the user currently pressing a button to move?
-  this.targetPos = null // defined if user input is touch
+  this.bodyOutline = randCol.rgb()
+
+  // is the user currently pressing a button to move?
+  this.isInput = AI ? true : false
+
+  // defined if user input is touch
+  this.targetPos = null
 
   this.velocity = [0, 0]
   this.accel = [0, 0]
@@ -330,11 +335,6 @@ Fish.prototype.physics = function(){
 
     // movement
 
-    var root2 = Math.sqrt(2)
-    //var velocity = this.velocity
-
-    // move dir to face towards target direction
-
     // mouse/touch input has a target location
     if(this.targetPos) {
         this.targetDir = directionTowards(this.targetPos, this)
@@ -377,8 +377,6 @@ Fish.prototype.physics = function(){
       this.accel = [0, 0]
     } else {
       this.accel = [
-        //Math.pow(Math.cos(this.dir),2) * sign(Math.cos(this.dir)),
-        //Math.pow(Math.sin(this.dir),2)* sign(Math.sin(this.dir))
         Math.cos(this.dir),
         Math.sin(this.dir)
       ]

@@ -15,7 +15,8 @@ Spawner.prototype.resize = function(width, height) {
 Spawner.prototype.update = function() {
   var self = this
 
-  for(var i=this.zones.length-1;i>=0;i--) {
+  var i = this.zones.length
+  while(i--) {
     var zone = this.zones[i]
     if(zone === this.currentZone) continue
     if(Math.abs(this.player.x - zone[0]) < this.width/2 && Math.abs(this.player.y - zone[1]) < this.height/2) {
@@ -40,7 +41,6 @@ Spawner.prototype.update = function() {
 
 }
 Spawner.prototype.spawn = function(zone) {
-
   // spawn 1-3  fish per 500sqpx, maybe larger maybe smaller than player
   // 0.5 chance that it will be bigger/smaller
   var mult = this.width*this.height/(500*500)
@@ -51,19 +51,7 @@ Spawner.prototype.spawn = function(zone) {
 
     var fish = new Fish(true, x, y, size, Math.random()*Math.PI*2-Math.PI, Math.random()*Math.PI)
 
-    var collided = false
     this.fishes.push(fish)
-    /*for(var j=0;j<this.fishes.length;j++) {
-      if(fish.collide(this.fishes[j])){
-        //i--
-        collided = true
-        break
-      }
-    }
-    if(collided) console.log('COLLIDED ON SPAWN')*/
-    /*if(!collided) {
-      this.fishes.push(fish)
-    }*/
   }
   return zone
 }

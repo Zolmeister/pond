@@ -10,9 +10,12 @@
         }
     </style>
     <body>
-        <script src='stats.js'></script>
+
+        <!-- load order does not matter -->
+        <script src='libs/stats.js'></script>
 
         <script src='util.js'></script>
+        <script src='menu.js'></script>
         <script src='sound.js'></script>
         <script src='levelbar.js'></script>
         <script src='spawner.js'></script>
@@ -20,7 +23,11 @@
         <script src='fish.js'></script>
         <script src='particle.js'></script>
         <script src='color.js'></script>
+
+        <!-- main comes last except for bindings -->
         <script src='main.js'></script>
+
+        <!-- bindings come last -->
         <script src='bindings.js'></script>
     </body>
 </html

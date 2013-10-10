@@ -1,4 +1,4 @@
-// last
+// loaded last
 
 var keymap = {
   38: 'up',

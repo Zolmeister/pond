@@ -1,5 +1,4 @@
 function LevelBar(width) {
-  // [{col: new Color(100, 20, 100), loaded: 1}, {col: new Color(10,20, 100), loaded: 0.5}]
   this.colors = []
   this.height = 6
   this.width = width

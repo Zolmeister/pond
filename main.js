@@ -32,25 +32,19 @@ setGlobals()
 loadAssets(fadeInMenu)
 
 function init() {
-  log('state')
   GAME.state = 'playing'
-  log('player')
   GAME.player = new Fish(false)
-  log('fishes')
   GAME.fishes = [GAME.player]
-  log('spawner')
   GAME.spawner = new Spawner($canv.width, $canv.height, GAME.player, GAME.fishes)
-  log('bar')
   GAME.levelParticles = []
   GAME.levelBar = new LevelBar($canv.width)
-  log('balls')
   GAME.levelBalls = new LevelBalls($canv.width, $canv.height)
   GAME.levelBallParticles = []
   GAME.endGameParticles = []
-  log('draw')
   requestAnimFrame(draw)
 }
 
+// main game loop
 function draw(time) {
   var i, l, j, dist, nextStage, fish, fish2
   lag += time - previousTime
@@ -222,7 +216,6 @@ function draw(time) {
       }
 
       // if far enough away from player, remove
-
       if(distance(fish, player) > Math.max($canv.width, $canv.height) * 2) {
         fish.dead = true
       }
@@ -281,19 +274,12 @@ function draw(time) {
 
 }
 
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame
-})();
-
-
 function loadAssets(cb) {
   var imgs = [
-    { name: 'logo', src: 'logo.png' },
-    { name: 'soundOn', src: 'sound-on.png' },
-    { name: 'soundOff', src: 'sound-off.png' },
-    {name: 'enter', src: 'enter.png'}
+    { name: 'logo', src: 'assets/logo.png' },
+    { name: 'soundOn', src: 'assets/sound-on.png' },
+    { name: 'soundOff', src: 'assets/sound-off.png' },
+    {name: 'enter', src: 'assets/enter.png'}
   ]
 
   function process() {
@@ -313,122 +299,7 @@ function loadAssets(cb) {
   process()
 }
 
-function sizeMenu() {
-  var title = {
-    width : ASSETS.logo.width,
-    height : ASSETS.logo.height,
-    minPaddingX : 100,
-    minPaddingY : 30,
-    x: null,
-    y: null
-  }
-
-  var button = {
-    x : null,
-    y : $canv.height / 1.8,
-    width : $canv.width * .5,
-    height : $canv.height / 6
-  }
-  button.x = $canv.width / 2 - button.width/2
-
-  // title
-  var scale = scaleSize(title.width, title.height, $canv.width - title.minPaddingX, $canv.height - button.y - title.minPaddingY*2)
-  title.width *= scale
-  title.height *= scale
-  title.x = $canv.width/2 - title.width/2
-  title.y = button.y - title.height - title.minPaddingY
-
-  GAME.MENU.title = title
-  GAME.MENU.button = button
-}
-
-function drawMenuButton(hitting) {
-  var button = GAME.MENU.button
-  // button
-  ctx.lineWidth = 4
-  ctx.strokeStyle = '#444'
-  roundRect(ctx, button.x, button.y, button.width, button.height, 20)
-  ctx.fillStyle= hitting ? '#222' : '#1a1a1a'
-  ctx.fill()
-  ctx.stroke()
-  var width = ASSETS.enter.width
-  var height = ASSETS.enter.height
-  var scale = scaleSize(width, height, button.width - 5, button.height - 5)
-  width *= scale
-  height *= scale
-  var x = button.x + button.width/2 - width/2
-  var y = button.y + button.height/2 - height/2
-  ctx.drawImage(ASSETS.enter, x, y, width, height)
-}
-
-// scale down w1 and h1 to fit inside w2 and h2 retaining aspect ratio
-function scaleSize(w1, h1, w2, h2) {
-  function scale(v1, v2) {
-    if(v1 > v2) {
-      return v2/v1
-    }
-    return 1
-  }
-  return Math.min(scale(w1, w2), scale(h1, h2))
-}
-
-function drawMenuLogo() {
-  var title = GAME.MENU.title
-  ctx.drawImage(ASSETS.logo, title.x, title.y, title.width, title.height)
-}
-
-function fadeInMenu() {
-
-  GAME.state = 'menu'
-  GAME.MENU.opacity = 0
-  requestAnimFrame(menuFade)
-  //drawMenu()
-}
-
-function menuFade() {
-  GAME.MENU.opacity+=0.02
-  drawMenu()
-  var alpha = 1-GAME.MENU.opacity
-  ctx.fillStyle = 'rgba(17,17,17,'+(alpha > 0 ? alpha : 0)+')'
-  ctx.fillRect(0, 0, $canv.width, $canv.height)
-  if(GAME.MENU.opacity < 1 && GAME.state === 'menu'){
-    requestAnimFrame(menuFade)
-  }
-}
-
-function drawMenu() {
-
-  sizeMenu()
-
-  // background
-  ctx.fillStyle = '#111'
-  ctx.fillRect(0, 0, $canv.width, $canv.height)
-
-  // set opacity
-  //ctx.globalAlpha = GAME.MENU.opacity
-
-  drawMenuLogo()
-
-  drawMenuButton()
-
-
-  drawSoundControl()
-}
-
-function roundRect (ctx, x, y, w, h, r) {
-  if (w < 2 * r) r = w / 2;
-  if (h < 2 * r) r = h / 2;
-  ctx.beginPath();
-  ctx.moveTo(x+r, y);
-  ctx.arcTo(x+w, y,   x+w, y+h, r);
-  ctx.arcTo(x+w, y+h, x,   y+h, r);
-  ctx.arcTo(x,   y+h, x,   y,   r);
-  ctx.arcTo(x,   y,   x+w, y,   r);
-  ctx.closePath();
-}
-
 // level debug
-//levelBalls.addBall()
 function levelUp(){
   var levelBar = GAME.levelBar
   for(var i=0;i<9;i++)
