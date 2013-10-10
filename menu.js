@@ -1,6 +1,7 @@
 function drawMenu() {
   sizeMenu()
 
+
   // background
   ctx.fillStyle = '#111'
   ctx.fillRect(0, 0, $canv.width, $canv.height)
@@ -11,11 +12,10 @@ function drawMenu() {
 
 function drawMenuLogo() {
   var title = GAME.MENU.title
-  ctx.drawImage(ASSETS.logo, title.x, title.y, title.width, title.height)
+  ctx.drawImage(ASSETS[usingSmallLogo ? 'logoSmall' : 'logo'], title.x, title.y, title.width, title.height)
 }
 
 function fadeInMenu() {
-console.log('Roar', ASSETS)
   GAME.state = 'menu'
   GAME.MENU.opacity = 0
   requestAnimFrame(menuFade)
@@ -54,10 +54,10 @@ function drawMenuButton(hitting) {
 
 function sizeMenu() {
   var title = {
-    width : ASSETS.logo.width,
-    height : ASSETS.logo.height,
-    minPaddingX : 100,
-    minPaddingY : 30,
+    width : ASSETS[usingSmallLogo ? 'logoSmall' : 'logo'].width,
+    height : ASSETS[usingSmallLogo ? 'logoSmall' : 'logo'].height,
+    minPaddingX : 50,
+    minPaddingY : 15,
     x: null,
     y: null
   }
@@ -79,4 +79,13 @@ function sizeMenu() {
 
   GAME.MENU.title = title
   GAME.MENU.button = button
+
+  // check to see if we should use lower resolution logo
+  if(title.width <= 300 && !usingSmallLogo) {
+    usingSmallLogo = true
+    sizeMenu()
+  } else if(scale === 1 && usingSmallLogo){
+    usingSmallLogo = false
+    sizeMenu()
+  }
 }

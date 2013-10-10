@@ -7,6 +7,9 @@ function setGlobals() {
   ctx.lineJoin = 'round'
   debug =  false //true
 
+  // this probably shouldnt be a global...
+  usingSmallLogo = false
+
   // window.ext is set by cocoonjs
   isMobile = !!window.ext
   // color pallet // blue        l blue        l green         orange         d orange
@@ -26,8 +29,9 @@ function setGlobals() {
   }
   // game loop
   MS_PER_UPDATE = 16
-  previousTime = 0.0
+  previousTime = Date.now()
   lag = 0.0
+  quality = 10
 }
 
 setGlobals()
@@ -43,7 +47,16 @@ function init() {
   GAME.levelBalls = new LevelBalls($canv.width, $canv.height)
   GAME.levelBallParticles = []
   GAME.endGameParticles = []
+  previousTime = Date.now() - previousTime
   requestAnimFrame(draw)
+}
+
+function lowerQuality() {
+  if(!isMobile) return
+  if(quality >= 7) {
+    quality -= 1
+    resizeWindow()
+  }
 }
 
 // main game loop
@@ -67,13 +80,17 @@ function draw(time) {
   var endGameParticles = GAME.endGameParticles
 
   if(debug) stats.begin()
-  var MAX_CYCLES = 15
+  var MAX_CYCLES = 20
   while(lag >= MS_PER_UPDATE && MAX_CYCLES) {
     physics()
     lag -= MS_PER_UPDATE
     MAX_CYCLES--
   }
 
+  if(MAX_CYCLES === 0) {
+    // adaptive quality
+    lowerQuality()
+  }
   // if 5 frames behind, jump
   if(lag/MS_PER_UPDATE > 75) {
     lag = 0.0
@@ -279,6 +296,7 @@ function draw(time) {
 function loadAssets(cb) {
   var imgs = [
     { name: 'logo', src: 'assets/logo.png' },
+    { name: 'logoSmall', src: 'assets/logo-small.png' },
     { name: 'soundOn', src: 'assets/sound-on.png' },
     { name: 'soundOff', src: 'assets/sound-off.png' },
     {name: 'enter', src: 'assets/enter.png'}

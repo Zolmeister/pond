@@ -15,9 +15,10 @@ var userInput = []
 var mouseDown = false
 var initializeOnUp = false
 
-window.onresize = function() {
-  $canv.width = window.innerWidth
-  $canv.height = window.innerHeight
+window.onresize = resizeWindow
+function resizeWindow() {
+  $canv.width = window.innerWidth * quality/10
+  $canv.height = window.innerHeight * quality/10
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
 
