@@ -6,7 +6,9 @@ function setGlobals() {
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
   debug =  false //true
-  isMobile = false
+
+  // window.ext is set by cocoonjs
+  isMobile = !!window.ext
   // color pallet // blue        l blue        l green         orange         d orange
   pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
   lastColor = new Color()
