@@ -1,0 +1,13 @@
+{
+  "name": "",
+  "description": "A narrow fellow in the Pond",
+  "launch_path": "/",
+  "icons": {
+    "128": "/publishing/icon-128.png"
+  },
+  "developer": {
+    "name": "Zolmeister",
+    "url": "http://zolmeister.com"
+  },
+  "default_locale": "en"
+}

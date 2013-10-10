@@ -24,6 +24,11 @@ app.get('/', function(req, res){
 	res.sendfile('index.html');
 });
 
+app.get('/manifest.webapp', function(req, res){
+	res.header('Content-Type', 'application/x-web-app-manifest+json');
+	res.sendfile('manifest.webapp');
+});
+
 app.get('/log', function(req, res){
   console.log(req.param('l'))
   res.end()
