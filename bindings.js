@@ -26,7 +26,7 @@ window.onresize = function() {
     GAME.levelBar.resize($canv.width, $canv.height)
     GAME.levelBalls.resize($canv.width, $canv.height)
   } else {
-    drawMenu()
+    if(ASSETS.loaded) drawMenu()
   }
 }
 

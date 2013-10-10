@@ -15,7 +15,7 @@ function drawMenuLogo() {
 }
 
 function fadeInMenu() {
-
+console.log('Roar', ASSETS)
   GAME.state = 'menu'
   GAME.MENU.opacity = 0
   requestAnimFrame(menuFade)

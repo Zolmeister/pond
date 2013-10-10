@@ -18,7 +18,7 @@ function setGlobals() {
     },
     state: 'menu'
   }
-  ASSETS = {}
+  ASSETS = {loaded: false}
 
   if(debug){
     stats = new Stats()
@@ -294,6 +294,7 @@ function loadAssets(cb) {
       }
       img.src = next.src
     } else {
+      ASSETS.loaded = true
       cb()
     }
   }
