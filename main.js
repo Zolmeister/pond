@@ -19,7 +19,8 @@ function setGlobals() {
     MENU: {
       opacity: 1
     },
-    state: 'menu'
+    state: 'menu',
+    firstLoop : true
   }
   ASSETS = {loaded: false}
 
@@ -29,7 +30,7 @@ function setGlobals() {
   }
   // game loop
   MS_PER_UPDATE = 16
-  previousTime = Date.now()
+  previousTime = 0.0
   lag = 0.0
   quality = 10
 }
@@ -47,7 +48,8 @@ function init() {
   GAME.levelBalls = new LevelBalls($canv.width, $canv.height)
   GAME.levelBallParticles = []
   GAME.endGameParticles = []
-  previousTime = Date.now() - previousTime
+  GAME.firstLoop = true
+  //previousTime = Date.now() - previousTime
   requestAnimFrame(draw)
 }
 
@@ -62,6 +64,7 @@ function lowerQuality() {
 // main game loop
 function draw(time) {
   var i, l, j, dist, nextStage, fish, fish2
+
   lag += time - previousTime
   previousTime = time
   if(GAME.state === 'playing'){
@@ -80,17 +83,20 @@ function draw(time) {
   var endGameParticles = GAME.endGameParticles
 
   if(debug) stats.begin()
-  var MAX_CYCLES = 20
+  var MAX_CYCLES = 18
   while(lag >= MS_PER_UPDATE && MAX_CYCLES) {
     physics()
     lag -= MS_PER_UPDATE
     MAX_CYCLES--
   }
 
-  if(MAX_CYCLES === 0) {
+  if(GAME.firstLoop) {
+    GAME.firstLoop = false
+  } else if(MAX_CYCLES === 0) {
     // adaptive quality
     lowerQuality()
   }
+
   // if 5 frames behind, jump
   if(lag/MS_PER_UPDATE > 75) {
     lag = 0.0
@@ -207,7 +213,7 @@ function draw(time) {
         if(fishes[i] === player) {
           setTimeout(function(){
             GAME.state = 'menu'
-          }, 5000)
+          }, 4000)
         }
         fishes.splice(i, 1)
         continue
