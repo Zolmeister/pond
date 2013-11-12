@@ -5,7 +5,7 @@ function setGlobals() {
   document.body.appendChild($canv)
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
-  debug =  false //true
+  debug =  true
 
   // this probably shouldnt be a global...
   usingSmallLogo = false
@@ -251,7 +251,7 @@ function draw(time) {
   function playerScore() {
 
     // player score
-    if(player.colors.length > 4 /*&& player.colors.every(function(col){return col.loaded >= 1})*/) {
+    if(player.colors.length > 4 && player.colors.every(function(col){return col.loaded >= 1})) {
 
       // steal colors from player
       player.drawColors()
