@@ -5,7 +5,7 @@ function setGlobals() {
   document.body.appendChild($canv)
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
-  debug = true
+  debug = false // true
 
   // this probably shouldnt be a global...
   usingSmallLogo = false
@@ -205,6 +205,7 @@ function draw(time) {
   }
 
   function fishPhysics() {
+    var i,j;
     // physics and drawing
     i = fishes.length
     while(i-- > 0) {
@@ -241,7 +242,7 @@ function draw(time) {
       }
 
       // if far enough away from player, remove
-      if(distance(fish, player) > Math.max($canv.width, $canv.height) * 2) {
+      if(distance(fish, player) > Math.max($canv.width, $canv.height) * 1.2) {
         fish.dead = true
       }
 
