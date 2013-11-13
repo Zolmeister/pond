@@ -46,17 +46,20 @@ LevelBar.prototype.addColor = function() {
   this.targetX = this.canv.width * this.percent
 }
 LevelBar.prototype.physics = function() {
+  var i, l;
+  
   if(this.x < this.targetX) {
     this.x += 1
   }
-  for(var i=0;i<this.colors.length;i++) {
+  for(i=0, l=this.colors.length;i < l;i++) {
     if(this.colors[i].loaded < 1) {
       this.colors[i].loaded += 0.012
     }
   }
-  var loadedSum = this.colors.reduce(function sumLoaded(sum, col){
-    return sum + col.loaded
-  }, 0)
+  var loadedSum = 0
+  for(i=0, l=this.colors.length; i < l; i++) {
+    loadedSum += this.colors[i].loaded
+  }
 
   if(loadedSum >= 10) {
     // create orb
@@ -66,18 +69,22 @@ LevelBar.prototype.physics = function() {
 }
 LevelBar.prototype.draw = function(outputCtx) {
   var ctx = this.ctx
+  var i, l;
   if(isMobile) ctx.clearRect(0, 0, this.width, this.height)
   if(!this.colors.length) return
-  var widthSum = this.colors.reduce(function(sum, color){
-    return sum + color.loaded
-  }, 0)
+  var widthSum = 0
+  for(i=0, l=this.colors.length; i < l; i++) {
+    widthSum += this.colors[i].loaded
+  }
+
   var totalWidth = this.x
-  var widths = this.colors.map(function normalize(color, i) {
-    return color.loaded / widthSum * totalWidth
-  })
+  var widths = []
+  for(i=0, l=this.colors.length; i < l; i++) {
+    widths.push(this.colors[i].loaded / widthSum * totalWidth)
+  }
 
   var x = 0
-  for(var i=0;i<this.colors.length;i++) {
+  for(i=0, l=this.colors.length; i < l ;i++) {
     var color = this.colors[i]
     ctx.strokeStyle = color.col.rgb()
     ctx.strokeRect(x, this.y, widths[i], this.height)

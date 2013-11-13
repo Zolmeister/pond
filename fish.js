@@ -139,13 +139,18 @@ Fish.prototype.drawColors = function() {
 
   var colorSize = size - size/4
   var colors = fish.colors
-  var thicknessSum = colors.reduce(function(sum, color){
-    return sum + color.thick * color.loaded
-  }, 0)
-  var width = colors.map(function normalize(color, i) {
-    return color.thick / thicknessSum * colorSize
-  })
 
+  var thicknessSum = 0
+  var color;
+  for(var i=0, l=colors.length; i < l; i++) {
+    color = colors[i]
+    thicknessSum += color.thick * color.loaded
+  }
+  
+  var width = []
+  for(var i=0, l=colors.length; i < l; i++) {
+    width.push(colors[i].thick / thicknessSum * colorSize)
+  }
 
   for(var c = 0, l=colors.length; c < l && colorSize >= 0; c++){
     ctx.beginPath()
