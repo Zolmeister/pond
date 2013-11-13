@@ -5,7 +5,7 @@ function setGlobals() {
   document.body.appendChild($canv)
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
-  debug =  true
+  debug = true
 
   // this probably shouldnt be a global...
   usingSmallLogo = false
@@ -289,9 +289,11 @@ function draw(time) {
 
   function paintFish() {
       // draw fish
+    var w = $canv.width
+    var h = $canv.height
     for(i = -1, l = fishes.length; ++i < l;) {
       fish = fishes[i]
-      if(Math.abs(fish.x - player.x) < $canv.width/2 + 200 && Math.abs(fish.y - player.y) < $canv.height/2 + 200) {
+      if(Math.abs(fish.x - player.x) < w/2 + 100 && Math.abs(fish.y - player.y) < h/2 + 100) {
         fish.draw(ctx)
       }
     }

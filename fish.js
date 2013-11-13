@@ -121,37 +121,9 @@ Fish.prototype.drawBody = function() {
   ctx.lineWidth = 4
 
   for(var i = -1; i < 2; i+=2){
-    var start = {
-      x: size,
-      y: 0
-    }
-    var c1 = {
-      x: size * (14/15),
-      y: i*size + size/30*o + curv/3
-    }
-    var c2 = {
-      x: -size/2,
-      y: i*size + size/30*o + curv/2
-    }
-    var end = {
-      x: -size*2,
-      y: i*size/3 + size/15*o + curv
-    }
-    ctx.moveTo(start.x, start.y)
-    ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
-    var c3 = {
-      x: -size * 2.5,
-      y: i*size/6 + size/10*o + curv
-    }
-    var c4 = {
-      x: -size*3,
-      y: i*size/4 - size/15*o + curv/2
-    }
-    var end2 = {
-      x: -size*3,
-      y: -size/15*o + curv/3
-    }
-    ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
+    ctx.moveTo(size, 0)
+    ctx.bezierCurveTo(size * (14/15), i*size + size/30*o + curv/3, -size/2, i*size + size/30*o + curv/2, -size*2, i*size/3 + size/15*o + curv)
+    ctx.bezierCurveTo(-size * 2.5, i*size/6 + size/10*o + curv, -size*3, i*size/4 - size/15*o + curv/2, -size*3, -size/15*o + curv/3)
   }
   ctx.stroke()
 
@@ -181,25 +153,8 @@ Fish.prototype.drawColors = function() {
     var thick = width[c]
     var percent = colors[c].loaded
     for (var i = -1; i < 2; i += 2) {
-      var start = {
-        x: colorSize,
-        y: 0
-      }
-      var c1 = {
-        x: colorSize * (14/15),
-        y: i*colorSize + size/30*o + curv/3
-      }
-      var c2 = {
-        x: -colorSize/2,
-        y: i*colorSize + size/30*o + curv/2
-      }
-      var end = {
-        x: -colorSize * 2.75 ,
-        y: size/15*o*percent + curv
-      }
-
-      ctx.moveTo(start.x, start.y)
-      ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
+      ctx.moveTo(colorSize, 0)
+      ctx.bezierCurveTo(colorSize * (14/15), i*colorSize + size/30*o + curv/3, -colorSize/2, i*colorSize + size/30*o + curv/2, -colorSize * 2.75, size/15*o*percent + curv)
     }
 
     ctx.strokeStyle = col
