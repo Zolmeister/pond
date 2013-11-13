@@ -68,6 +68,8 @@ LevelBar.prototype.physics = function() {
   return false
 }
 LevelBar.prototype.draw = function(outputCtx) {
+  if(!this.colors.length) return
+  
   var ctx = this.ctx
   var i, l;
   if(isMobile) ctx.clearRect(0, 0, this.width, this.height)
