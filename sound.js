@@ -1,7 +1,7 @@
 var muted = false
 popSound = document.createElement('audio')
 popSound.src='assets/drop1.ogg'
-popSound.volume = 0.6
+popSound.volume = 0.4
 
 if(localStorage.muted === 'true') toggleMute()
 
