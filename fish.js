@@ -147,7 +147,7 @@ Fish.prototype.drawColors = function() {
   })
 
 
-  for(var c = 0, l=colors.length; c < l; c++){
+  for(var c = 0, l=colors.length; c < l && colorSize >= 0; c++){
     ctx.beginPath()
     var col = colors[c].col
     var thick = width[c]
@@ -163,7 +163,6 @@ Fish.prototype.drawColors = function() {
 
     // resize for next color drawn (outside -> in)
     colorSize -= thick
-    if (colorSize < 0) break
   }
 }
 Fish.prototype.drawDeath = function(outputCtx) {
@@ -412,8 +411,8 @@ Fish.prototype.updateInput = function(input, isTouch) {
 }
 Fish.prototype.setSize = function(size) {
   this.size = size
-  this.canv.width = this.size*4.5
-  this.canv.height = this.size*2.5
+  this.canv.width = ~~this.size*4.4
+  this.canv.height = ~~this.size*2.2
   this.ctx = this.canv.getContext('2d')
   this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
 
