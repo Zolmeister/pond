@@ -20,7 +20,8 @@ function setGlobals() {
       opacity: 1
     },
     state: 'menu',
-    firstLoop : true
+    firstLoop : true,
+    bufferLoop: true
   }
   ASSETS = {loaded: false}
 
@@ -83,17 +84,19 @@ function draw(time) {
   var endGameParticles = GAME.endGameParticles
 
   if(debug) stats.begin()
-  var MAX_CYCLES = 18
+  var MAX_CYCLES = 17
   while(lag >= MS_PER_UPDATE && MAX_CYCLES) {
     physics()
     lag -= MS_PER_UPDATE
     MAX_CYCLES--
   }
 
-  if(GAME.firstLoop) {
+  if(MAX_CYCLES === 0 && GAME.firstLoop) {
     GAME.firstLoop = false
-  } else if(MAX_CYCLES === 0) {
-    // adaptive quality
+  } else if( MAX_CYCLES === 0 && GAME.bufferLoop) {
+    GAME.bufferLoop = false
+  } else if (MAX_CYCLES === 0) {
+     // adaptive quality
     lowerQuality()
   }
 
