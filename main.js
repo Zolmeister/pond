@@ -5,7 +5,7 @@ function setGlobals() {
   document.body.appendChild($canv)
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
-  debug =  false //true
+  debug = false // true
 
   // this probably shouldnt be a global...
   usingSmallLogo = false
@@ -205,6 +205,7 @@ function draw(time) {
   }
 
   function fishPhysics() {
+    var i,j;
     // physics and drawing
     i = fishes.length
     while(i-- > 0) {
@@ -241,7 +242,7 @@ function draw(time) {
       }
 
       // if far enough away from player, remove
-      if(distance(fish, player) > Math.max($canv.width, $canv.height) * 2) {
+      if(distance(fish, player) > Math.max($canv.width, $canv.height) * 1.2) {
         fish.dead = true
       }
 
@@ -251,7 +252,7 @@ function draw(time) {
   function playerScore() {
 
     // player score
-    if(player.colors.length > 4 /*&& player.colors.every(function(col){return col.loaded >= 1})*/) {
+    if(player.colors.length > 4 && player.colors.every(function(col){return col.loaded >= 1})) {
 
       // steal colors from player
       player.drawColors()
@@ -289,9 +290,11 @@ function draw(time) {
 
   function paintFish() {
       // draw fish
+    var w = $canv.width
+    var h = $canv.height
     for(i = -1, l = fishes.length; ++i < l;) {
       fish = fishes[i]
-      if(Math.abs(fish.x - player.x) < $canv.width/2 + 200 && Math.abs(fish.y - player.y) < $canv.height/2 + 200) {
+      if(Math.abs(fish.x - player.x) < w/2 + 100 && Math.abs(fish.y - player.y) < h/2 + 100) {
         fish.draw(ctx)
       }
     }

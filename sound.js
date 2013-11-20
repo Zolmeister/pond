@@ -1,7 +1,7 @@
 var muted = false
 popSound = document.createElement('audio')
 popSound.src='assets/drop1.ogg'
-popSound.volume = 0.6
+popSound.volume = 0.4
 
 if(localStorage.muted === 'true') toggleMute()
 
@@ -25,8 +25,8 @@ function playPop() {
 
 function drawSoundControl() {
   if(typeof ctx === 'undefined') return
-  ctx.fillStyle='#111'
-  ctx.fillRect($canv.width - 25, 10, 16, 22)
+  //ctx.fillStyle='#111'
+  //ctx.fillRect($canv.width - 25, 10, 16, 22)
   if(muted)
     ctx.drawImage(ASSETS.soundOff, $canv.width - 25, 10)
   else

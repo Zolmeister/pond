@@ -121,37 +121,9 @@ Fish.prototype.drawBody = function() {
   ctx.lineWidth = 4
 
   for(var i = -1; i < 2; i+=2){
-    var start = {
-      x: size,
-      y: 0
-    }
-    var c1 = {
-      x: size * (14/15),
-      y: i*size + size/30*o + curv/3
-    }
-    var c2 = {
-      x: -size/2,
-      y: i*size + size/30*o + curv/2
-    }
-    var end = {
-      x: -size*2,
-      y: i*size/3 + size/15*o + curv
-    }
-    ctx.moveTo(start.x, start.y)
-    ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
-    var c3 = {
-      x: -size * 2.5,
-      y: i*size/6 + size/10*o + curv
-    }
-    var c4 = {
-      x: -size*3,
-      y: i*size/4 - size/15*o + curv/2
-    }
-    var end2 = {
-      x: -size*3,
-      y: -size/15*o + curv/3
-    }
-    ctx.bezierCurveTo(c3.x, c3.y, c4.x, c4.y, end2.x, end2.y)
+    ctx.moveTo(size, 0)
+    ctx.bezierCurveTo(size * (14/15), i*size + size/30*o + curv/3, -size/2, i*size + size/30*o + curv/2, -size*2, i*size/3 + size/15*o + curv)
+    ctx.bezierCurveTo(-size * 2.5, i*size/6 + size/10*o + curv, -size*3, i*size/4 - size/15*o + curv/2, -size*3, -size/15*o + curv/3)
   }
   ctx.stroke()
 
@@ -167,39 +139,27 @@ Fish.prototype.drawColors = function() {
 
   var colorSize = size - size/4
   var colors = fish.colors
-  var thicknessSum = colors.reduce(function(sum, color){
-    return sum + color.thick * color.loaded
-  }, 0)
-  var width = colors.map(function normalize(color, i) {
-    return color.thick / thicknessSum * colorSize
-  })
 
+  var thicknessSum = 0
+  var color;
+  for(var i=0, l=colors.length; i < l; i++) {
+    color = colors[i]
+    thicknessSum += color.thick * color.loaded
+  }
+  
+  var width = []
+  for(var i=0, l=colors.length; i < l; i++) {
+    width.push(colors[i].thick / thicknessSum * colorSize)
+  }
 
-  for(var c = 0, l=colors.length; c < l; c++){
+  for(var c = 0, l=colors.length; c < l && colorSize >= 0; c++){
     ctx.beginPath()
     var col = colors[c].col
     var thick = width[c]
     var percent = colors[c].loaded
     for (var i = -1; i < 2; i += 2) {
-      var start = {
-        x: colorSize,
-        y: 0
-      }
-      var c1 = {
-        x: colorSize * (14/15),
-        y: i*colorSize + size/30*o + curv/3
-      }
-      var c2 = {
-        x: -colorSize/2,
-        y: i*colorSize + size/30*o + curv/2
-      }
-      var end = {
-        x: -colorSize * 2.75 ,
-        y: size/15*o*percent + curv
-      }
-
-      ctx.moveTo(start.x, start.y)
-      ctx.bezierCurveTo(c1.x, c1.y, c2.x, c2.y, end.x, end.y)
+      ctx.moveTo(colorSize, 0)
+      ctx.bezierCurveTo(colorSize * (14/15), i*colorSize + size/30*o + curv/3, -colorSize/2, i*colorSize + size/30*o + curv/2, -colorSize * 2.75, size/15*o*percent + curv)
     }
 
     ctx.strokeStyle = col
@@ -208,7 +168,6 @@ Fish.prototype.drawColors = function() {
 
     // resize for next color drawn (outside -> in)
     colorSize -= thick
-    if (colorSize < 0) break
   }
 }
 Fish.prototype.drawDeath = function(outputCtx) {
@@ -457,8 +416,8 @@ Fish.prototype.updateInput = function(input, isTouch) {
 }
 Fish.prototype.setSize = function(size) {
   this.size = size
-  this.canv.width = this.size*4.5
-  this.canv.height = this.size*2.5
+  this.canv.width = ~~this.size*4.4
+  this.canv.height = ~~this.size*2.2
   this.ctx = this.canv.getContext('2d')
   this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
 

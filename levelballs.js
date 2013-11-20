@@ -31,8 +31,10 @@ LevelBalls.prototype.resize = function(width, height) {
   }
 }
 LevelBalls.prototype.draw = function(outputCtx) {
+  if (!this.balls.length) return
+  
   this.ctx.clearRect(0, 0, this.canv.width, this.canv.height)
-  for(var i=0;i<this.balls.length;i++) {
+  for(var i=0, l=this.balls.length;i<l;i++) {
     this.balls[i].draw(this.ctx)
   }
   outputCtx.drawImage(this.canv, 0, this.y)
