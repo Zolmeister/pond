@@ -416,8 +416,8 @@ Fish.prototype.updateInput = function(input, isTouch) {
 }
 Fish.prototype.setSize = function(size) {
   this.size = size
-  this.canv.width = ~~this.size*4.4
-  this.canv.height = ~~this.size*2.2
+  this.canv.width = this.size*4.4
+  this.canv.height = ~~this.size*2.3
   this.ctx = this.canv.getContext('2d')
   this.ctx.translate(this.canv.width/2 + this.size, this.canv.height/2)
 
