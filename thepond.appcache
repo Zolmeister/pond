@@ -1,9 +1,12 @@
 CACHE MANIFEST
+#build 1.0.5
+
 index.html
+libs/stats.js
 assets/logo.png
 assets/drop1.ogg
 assets/enter.png
-assets/Leckerli One.ttf
+assets/Leckerli%20One.ttf
 assets/logo-small.png
 assets/sound-off.png
 assets/sound-on.png
