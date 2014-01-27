@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#build 1.0.6
+#build 1.0.7
 
 index.html
 libs/stats.js
@@ -22,3 +22,4 @@ particle.js
 sound.js
 spawner.js
 util.js
+http://cdn.kik.com/cards/0.11.3/cards.js
