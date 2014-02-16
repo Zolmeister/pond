@@ -13,16 +13,14 @@ Spawner.prototype.resize = function(width, height) {
   this.zones = this.getAdjacentZones().concat([this.currentZone])
 }
 Spawner.prototype.update = function() {
-  var self = this
-
   var i = this.zones.length
   while(i--) {
-    var zone = this.zones[i]
-    if(zone === this.currentZone) continue
-    if(Math.abs(this.player.x - zone[0]) < this.width/2 && Math.abs(this.player.y - zone[1]) < this.height/2) {
-      this.currentZone = zone
+    if(this.zones[i] === this.currentZone) continue
+    if(Math.abs(this.player.x - this.zones[i][0]) < this.width/2 && Math.abs(this.player.y - this.zones[i][1]) < this.height/2) {
+      this.currentZone = this.zones[i]
 
       // spawn in new adjacent zones
+      var self = this
       var newZones = this.getAdjacentZones().filter(function getNewZones(zone){
         return self.zones.every(function(zone2){
           return !(zone2[0]===zone[0] && zone2[1]===zone[1])
@@ -34,7 +32,7 @@ Spawner.prototype.update = function() {
     }
 
     // if zone is really far from user, remove it
-    if(distance({x: zone[0], y: zone[1]}, this.player) > Math.max(this.width, this.height)*2) {
+    if(distance({x: this.zones[i][0], y: this.zones[i][1]}, this.player) > Math.max(this.width, this.height)*2) {
       this.zones.splice(i, 1)
     }
   }

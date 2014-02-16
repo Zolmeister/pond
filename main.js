@@ -146,7 +146,6 @@ function draw(time) {
     // enemy spawner
     spawner.update()
     // enemy spawner debug
-    if(debug) spawner.debug()
     fishPhysics()
     playerScore()
   }
@@ -241,7 +240,6 @@ function draw(time) {
   }
 
   function fishPhysics() {
-    var i,j;
     // physics and drawing
     i = fishes.length
     while(i-- > 0) {
@@ -301,7 +299,7 @@ function draw(time) {
       }
 
       GAME.levelParticles = levelParticles.concat(newParticles)
-      var colors = player.colors.splice(0, 4)
+      player.colors.splice(0, 4)
 
     }
   }
