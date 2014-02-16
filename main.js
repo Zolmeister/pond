@@ -103,6 +103,8 @@ function draw(time) {
   } else if (MAX_CYCLES === 0) {
      // adaptive quality
     lowerQuality()
+    GAME.firstLoop = true
+    GAME.bufferLoop = true
   }
 
   // if 5 frames behind, jump
