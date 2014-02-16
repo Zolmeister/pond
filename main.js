@@ -1,21 +1,23 @@
+"use strict";
+
 function setGlobals() {
-  $canv = document.createElement('canvas')
+  window.$canv = document.createElement('canvas')
   $canv.width = window.innerWidth
   $canv.height = window.innerHeight
   document.body.appendChild($canv)
-  ctx = $canv.getContext('2d')
+  window.ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
-  debug = false // true
+  window.debug = false // true
 
   // this probably shouldnt be a global...
-  usingSmallLogo = false
+  window.usingSmallLogo = false
 
   // window.ext is set by cocoonjs
-  isMobile = !!window.ext
+  window.isMobile = !!window.ext
   // color pallet // blue        l blue        l green         orange         d orange
-  pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
-  lastColor = new Color()
-  GAME = {
+  window.pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
+  window.lastColor = new Color()
+  window.GAME = {
     MENU: {
       opacity: 1
     },
@@ -23,17 +25,46 @@ function setGlobals() {
     firstLoop : true,
     bufferLoop: true
   }
-  ASSETS = {loaded: false}
+  window.ASSETS = {loaded: false}
 
   if(debug){
-    stats = new Stats()
+    window.stats = new Stats()
     document.body.appendChild(stats.domElement)
   }
   // game loop
-  MS_PER_UPDATE = 16
-  previousTime = 0.0
-  lag = 0.0
-  quality = 10
+  window.MS_PER_UPDATE = 32
+  window.previousTime = 0.0
+  window.lag = 0.0
+  window.quality = 10
+  
+  // object pool
+  var poolCnt = 1000
+  window.objectPool = (function() {
+    var objects = []
+    var available = []
+    var i = poolCnt
+    while (i-- > 0) {
+      objects.push({})
+      available.push(objects.length - 1)
+    }
+    return {
+      create: function() {
+        if(available.length === 0) {
+          var i = poolCnt
+          while (i-- > 0) {
+            objects.push({})
+            available.push(objects.length - 1)
+          }
+        }
+        
+        return objects[available.pop()]
+      },
+      free: function(object) {
+        available.push(objects.indexOf(object))
+      }
+    }
+  })()
+  
 }
 
 setGlobals()
@@ -136,6 +167,8 @@ function draw(time) {
     ctx.translate(-player.x + $canv.width/2, -player.y + $canv.height/2)
     paintEndGameParticles()
     paintFish()
+    
+    if(debug) spawner.debug()
     ctx.restore()
 
     drawSoundControl()
@@ -245,7 +278,7 @@ function draw(time) {
       }
 
       // if far enough away from player, remove
-      if(distance(fish, player) > Math.max($canv.width, $canv.height) * 1.2) {
+      if(distance(fish, player) > Math.max($canv.width, $canv.height)) {
         fish.dead = true
       }
 

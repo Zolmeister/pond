@@ -5,8 +5,8 @@ function Particle(x, y, color, targetFish, dir, r, speed, arcSpeed) {
   this.target = targetFish
   this.dir = dir || 0
   this.r = r || 2
-  this.speed = speed || 4
-  this.arcSpeed = arcSpeed || 0.2
+  this.speed = speed || 8
+  this.arcSpeed = arcSpeed || 0.4
 }
 Particle.prototype.draw = function(ctx) {
     ctx.lineWidth = 2

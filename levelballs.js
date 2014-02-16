@@ -47,7 +47,7 @@ LevelBalls.prototype.physics = function() {
   return cnt === 10
 }
 LevelBalls.prototype.toParticles = function(target) {
-  return particalize.call(this, target, this.y, 4, 0.08)
+  return particalize.call(this, target, this.y, 8, 0.16)
 }
 LevelBalls.prototype.shift = function() {
   this.x += this.width/13 + this.ballRadius

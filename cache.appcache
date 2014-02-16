@@ -1,7 +1,8 @@
 CACHE MANIFEST
-#build 1.0.7
+#build 1.0.7.1
 
 CACHE:
+#NETWORK:
 index.html
 libs/stats.js
 assets/logo.png

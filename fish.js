@@ -4,7 +4,7 @@ function Fish(AI, x, y, size, dir, frame) {
   this.dir = dir || 0 // radians
   this.AI = AI || false
   this.targetDir = dir
-  this.arcSpeed = 0.07
+  this.arcSpeed = 0.14
   this.canv = document.createElement('canvas')
   this.circles = Array.apply([], new Array(6)).map(function(cir, i){
     return {
@@ -42,7 +42,7 @@ function Fish(AI, x, y, size, dir, frame) {
 
   this.velocity = [0, 0]
   this.accel = [0, 0]
-  this.maxSpeed = this.AI ? 1 : 3
+  this.maxSpeed = this.AI ? 2 : 6
 
 }
 Fish.prototype.draw = function(outputCtx) {

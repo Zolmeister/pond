@@ -37,7 +37,7 @@ LevelBar.prototype.resize = function(width, height) {
   this.targetX = this.x
 }
 LevelBar.prototype.toParticles = function(target) {
-  return particalize.call(this, target, 0, 10, 0.6)
+  return particalize.call(this, target, 0, 20, 1.2)
 }
 LevelBar.prototype.addColor = function() {
   var color = randColor(this.colors[this.colors.length-1])
