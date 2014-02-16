@@ -73,8 +73,11 @@ function draw(time) {
 
   lag += time - previousTime
   previousTime = time
+
   if(GAME.state === 'playing'){
-    requestAnimFrame(draw)
+    requestAnimFrame(function(t){
+      draw(t)
+    })
   } else {
     return fadeInMenu()
   }
@@ -260,24 +263,28 @@ function draw(time) {
   }
 
   function playerScore() {
-
-    // player score
-    if(player.colors.length > 4 && player.colors.every(function(col){return col.loaded >= 1})) {
-
-      // steal colors from player
-      player.drawColors()
-      var newParticles = player.toParticles(levelBar)
-
-      // staticly position
-      for(i=0;i<newParticles.length;i++) {
-        newParticles[i].x += -player.x + $canv.width/2
-        newParticles[i].y += -player.y + $canv.height/2
+    i=player.colors.length
+    if (i <=4 ) return
+    while(i-->0) {
+      if (player.colors[i].loaded < 1) {
+        return
       }
-
-      GAME.levelParticles = levelParticles.concat(newParticles)
-      player.colors.splice(0, 4)
-
     }
+    
+    // player score
+    // steal colors from player
+    player.drawColors()
+    var newParticles = player.toParticles(levelBar)
+
+    // staticly position
+    for(i=0;i<newParticles.length;i++) {
+      newParticles[i].x += -player.x + $canv.width/2
+      newParticles[i].y += -player.y + $canv.height/2
+    }
+
+    GAME.levelParticles = levelParticles.concat(newParticles)
+    player.colors.splice(0, 4)
+
   }
 
   function paintLevelParticles() {
@@ -299,12 +306,10 @@ function draw(time) {
   }
 
   function paintFish() {
-      // draw fish
-    var w = $canv.width
-    var h = $canv.height
+    // draw fish
     for(i = -1, l = fishes.length; ++i < l;) {
       fish = fishes[i]
-      if(Math.abs(fish.x - player.x) < w/2 + 100 && Math.abs(fish.y - player.y) < h/2 + 100) {
+      if(Math.abs(fish.x - player.x) < $canv.width/2 + 100 && Math.abs(fish.y - player.y) < $canv.height/2 + 100) {
         fish.draw(ctx)
       }
     }

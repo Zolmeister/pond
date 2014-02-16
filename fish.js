@@ -191,14 +191,15 @@ Fish.prototype.killedBy = function(target) {
   if(!this.AI || !target.AI) playPop()
   this.deathParticles = this.toParticles(target)
 }
+var r, g, b
 Fish.prototype.toParticles = function(target) {
   var particles = []
 
   var pixels = this.ctx.getImageData(0,0,this.canv.width, this.canv.height).data
   for(var i = 0; i < pixels.length; i += 36 * Math.ceil(this.size/20) * (isMobile ? 6 : 1)) {
-    var r = pixels[i]
-    var g = pixels[i + 1]
-    var b = pixels[i + 2]
+    r = pixels[i]
+    g = pixels[i + 1]
+    b = pixels[i + 2]
 
     // black pixel - no data
     if(!r && !g && !b){
@@ -219,15 +220,18 @@ Fish.prototype.toParticles = function(target) {
   }
   return particles
 }
+
+var friction = 0.1
+var t1, t2, moveDir, diff, ossilation, curv, p, i,l,pos,arcSpeed
 Fish.prototype.physics = function(){
 
   this.ossilation = Math.sin(this.frame/3)
-  var ossilation = this.ossilation
+  ossilation = this.ossilation
 
-  var t1 = this.dir
-  var t2 = this.targetDir
-  var moveDir = 1
-  var diff = 0
+  t1 = this.dir
+  t2 = this.targetDir
+  moveDir = 1
+  diff = 0
   if(Math.abs(t1-t2)>Math.PI) {
     moveDir = -1
   }
@@ -236,7 +240,7 @@ Fish.prototype.physics = function(){
   } else if(t1 < t2) {
     diff = t2-t1*moveDir
   }
-  var curv = this.size/15 * diff
+  curv = this.size/15 * diff
   this.curv = curv || 0
 
   // grow inner colors
@@ -248,10 +252,9 @@ Fish.prototype.physics = function(){
 
   // fish is now particles
   if(this.dying) {
-    for(var i=this.deathParticles.length-1;i>=0;i--){
-      var p = this.deathParticles[i]
-      var dist = p.physics()
-      if(dist < p.target.size/8+10) {
+    for(i=this.deathParticles.length-1;i>=0;i--){
+      p = this.deathParticles[i]
+      if(p.physics() < p.target.size/8+10) {
         this.deathParticles.splice(i,1)
 
         p.target.setSize(p.target.size+0.001 * (isMobile ? 6 : 1))
@@ -268,8 +271,8 @@ Fish.prototype.physics = function(){
     }
   } else {
     // update collision circles
-    for(var i=0, l=this.circles.length;i<l;i++) {
-      var pos = rot(this.circleMap[i][0], this.circleMap[i][1]*ossilation, this.dir)
+    for(i=0, l=this.circles.length;i<l;i++) {
+      pos = rot(this.circleMap[i][0], this.circleMap[i][1]*ossilation, this.dir)
       this.circles[i].x = pos[0] + this.x
       this.circles[i].y = pos[1] + this.y
     }
@@ -285,17 +288,17 @@ Fish.prototype.physics = function(){
 
       // random walk
       if(Math.random() < 0.01) this.AIDir *= -1 // 1% chance to change directions every frame
-      var diff = Math.random()/100 * this.AIDir
+      diff = Math.random()/100 * this.AIDir
       this.targetDir = this.targetDir + diff
       this.targetDir %= Math.PI
 
     }
 
-    var t1 = this.dir
-    var t2 = typeof this.targetDir === 'undefined' ? this.dir : this.targetDir
-    var arcSpeed = this.arcSpeed
+    t1 = this.dir
+    t2 = typeof this.targetDir === 'undefined' ? this.dir : this.targetDir
+    arcSpeed = this.arcSpeed
 
-    var moveDir = 1
+    moveDir = 1
     if(Math.abs(t1-t2)>Math.PI) {
       moveDir = -1
     }
@@ -315,12 +318,11 @@ Fish.prototype.physics = function(){
     if(!this.isInput) {
 
       // user is not applying input
-      this.accel = [0, 0]
+      this.accel[0] = 0
+      this.accel[1] = 0
     } else {
-      this.accel = [
-        Math.cos(this.dir),
-        Math.sin(this.dir)
-      ]
+      this.accel[0] = Math.cos(this.dir)
+      this.accel[1] = Math.sin(this.dir)
     }
 
     // update velocity vector
@@ -331,7 +333,6 @@ Fish.prototype.physics = function(){
     this.velocity[1] = Math.max(-this.maxSpeed, Math.min(this.maxSpeed, this.velocity[1]))
 
     // apply friction
-    var friction = 0.1
     if (this.velocity[0] > 0) {
       this.velocity[0] -= Math.min(friction, this.velocity[0])
     }
@@ -352,21 +353,21 @@ Fish.prototype.physics = function(){
 
   this.frame++
 }
+var pi = Math.PI
+var dirMap = {
+  'up':         -pi/2,
+  'right up':   -pi/4,
+  'right':      0,
+  'down right': pi/4,
+  'down':       pi/2,
+  'down left':  3*pi/4,
+  'left':       pi,
+  'left up':    -3*pi/4
+}
 Fish.prototype.updateInput = function(input, isTouch) {
   // remember that up is down and down is up because of coordinate system
-  var pi = Math.PI
-  var dirMap = {
-    'up':         -pi/2,
-    'right up':   -pi/4,
-    'right':      0,
-    'down right': pi/4,
-    'down':       pi/2,
-    'down left':  3*pi/4,
-    'left':       pi,
-    'left up':    -3*pi/4
-  }
+  
   if(isTouch) {
-
     // touch input
     
     // if valid
