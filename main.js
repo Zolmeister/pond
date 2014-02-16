@@ -1,11 +1,13 @@
 "use strict";
 
 function setGlobals() {
-  window.$canv = document.createElement('canvas')
-  $canv.width = window.innerWidth
-  $canv.height = window.innerHeight
-  document.body.appendChild($canv)
+  
+  window.devicePixelRatio = (window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio) || 1
+  window.$canv = document.getElementById('mainCanv')
+  $canv.width = window.innerWidth * devicePixelRatio
+  $canv.height = window.innerHeight * devicePixelRatio
   window.ctx = $canv.getContext('2d')
+  
   ctx.lineJoin = 'round'
   window.debug = false // true
 

@@ -17,8 +17,8 @@ var initializeOnUp = false
 
 window.onresize = resizeWindow
 function resizeWindow() {
-  $canv.width = window.innerWidth * quality/10
-  $canv.height = window.innerHeight * quality/10
+  $canv.width = window.innerWidth * devicePixelRatio * quality / 10
+  $canv.height = window.innerHeight * devicePixelRatio * quality / 10
   ctx = $canv.getContext('2d')
   ctx.lineJoin = 'round'
 
@@ -33,12 +33,12 @@ function resizeWindow() {
 
 function eventPos(e) {
   if (e.type.indexOf('touch') === -1){ // if its a mouse coord
-    return {x: e.pageX, y: e.pageY, width: 1, height: 1}
+    return {x: e.pageX*window.devicePixelRatio, y: e.pageY*window.devicePixelRatio, width: 1, height: 1}
   }
 
   // touch event coord
   if(e.type === 'touchend') return {x: 0, y: 0, width: 0, height: 0}
-  return {x: e.touches[0].pageX - 35, y: e.touches[0].pageY - 35, width: 70, height: 70}
+  return {x: e.touches[0].pageX*window.devicePixelRatio - 35, y: e.touches[0].pageY*window.devicePixelRatio - 35, width: 70, height: 70}
 }
 
 $canv.addEventListener('mousedown', touchDown)
