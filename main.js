@@ -36,35 +36,6 @@ function setGlobals() {
   window.previousTime = 0.0
   window.lag = 0.0
   window.quality = 10
-  
-  // object pool
-  var poolCnt = 1000
-  window.objectPool = (function() {
-    var objects = []
-    var available = []
-    var i = poolCnt
-    while (i-- > 0) {
-      objects.push({})
-      available.push(objects.length - 1)
-    }
-    return {
-      create: function() {
-        if(available.length === 0) {
-          var i = poolCnt
-          while (i-- > 0) {
-            objects.push({})
-            available.push(objects.length - 1)
-          }
-        }
-        
-        return objects[available.pop()]
-      },
-      free: function(object) {
-        available.push(objects.indexOf(object))
-      }
-    }
-  })()
-  
 }
 
 setGlobals()
