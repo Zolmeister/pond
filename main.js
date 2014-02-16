@@ -276,7 +276,7 @@ function draw(time) {
       }
 
       // if far enough away from player, remove
-      if(distance(fish, player) > Math.max($canv.width, $canv.height)) {
+      if(distance(fish, player) > Math.max($canv.width, $canv.height) * 1.5) {
         fish.dead = true
       }
 

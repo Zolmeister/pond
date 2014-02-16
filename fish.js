@@ -123,6 +123,7 @@ Fish.prototype.drawBody = function() {
 
 }
 Fish.prototype.drawColors = function() {
+  var i,l,c;
   // inner colors
   var o = this.ossilation
   this.ctx.lineWidth = 2
@@ -130,31 +131,28 @@ Fish.prototype.drawColors = function() {
   var colorSize = this.size - this.size/4
 
   var thicknessSum = 0
-  for(var i=0, l=this.colors.length; i < l; i++) {
+  for(i=0, l=this.colors.length; i < l; i++) {
     thicknessSum += this.colors[i].thick * this.colors[i].loaded
   }
   
   var width = []
-  for(var i=0, l=this.colors.length; i < l; i++) {
+  for(i=0, l=this.colors.length; i < l; i++) {
     width.push(this.colors[i].thick / thicknessSum * colorSize)
   }
 
-  for(var c = 0, l=this.colors.length; c < l && colorSize >= 0; c++){
+  for(c = 0, l=this.colors.length; c < l && colorSize >= 0; c++){
     this.ctx.beginPath()
-    var col = this.colors[c].col
-    var thick = width[c]
-    var percent = this.colors[c].loaded
-    for (var i = -1; i < 2; i += 2) {
+    for (i = -1; i < 2; i += 2) {
       this.ctx.moveTo(colorSize, 0)
-      this.ctx.bezierCurveTo(colorSize * (14/15), i*colorSize + this.size/30*o + this.curv/3, -colorSize/2, i*colorSize + this.size/30*o + this.curv/2, -colorSize * 2.75, this.size/15*o*percent + this.curv)
+      this.ctx.bezierCurveTo(colorSize * (14/15), i*colorSize + this.size/30*o + this.curv/3, -colorSize/2, i*colorSize + this.size/30*o + this.curv/2, -colorSize * 2.75, this.size/15*o*this.colors[c].loaded + this.curv)
     }
 
-    this.ctx.strokeStyle = col
+    this.ctx.strokeStyle = this.colors[c].col
     this.ctx.stroke()
 
 
     // resize for next color drawn (outside -> in)
-    colorSize -= thick
+    colorSize -= width[c]
   }
 }
 Fish.prototype.drawDeath = function(outputCtx) {
@@ -223,7 +221,7 @@ Fish.prototype.toParticles = function(target) {
 }
 Fish.prototype.physics = function(){
 
-  this.ossilation = Math.sin(this.frame/5)
+  this.ossilation = Math.sin(this.frame/3)
   var ossilation = this.ossilation
 
   var t1 = this.dir
