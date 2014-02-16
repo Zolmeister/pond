@@ -1,11 +1,13 @@
 "use strict";
 
 function setGlobals() {
-  
-  window.devicePixelRatio = (window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio) || 1
+  // window.ext is set by cocoonjs
+  window.isMobile = !!window.ext
+
+  window.devPixelRatio = (window.devicePixelRatio > 2 ? 2 : window.devicePixelRatio) || 1
   window.$canv = document.getElementById('mainCanv')
-  $canv.width = window.innerWidth * devicePixelRatio
-  $canv.height = window.innerHeight * devicePixelRatio
+  $canv.width = window.innerWidth * devPixelRatio
+  $canv.height = window.innerHeight * devPixelRatio
   window.ctx = $canv.getContext('2d')
   
   ctx.lineJoin = 'round'
@@ -14,8 +16,7 @@ function setGlobals() {
   // this probably shouldnt be a global...
   window.usingSmallLogo = false
 
-  // window.ext is set by cocoonjs
-  window.isMobile = !!window.ext
+  
   // color pallet // blue        l blue        l green         orange         d orange
   window.pallet = [[105,210,231], [167,219,216], [224,228,204], [243,134,48], [250,105,0]]
   window.lastColor = new Color()
