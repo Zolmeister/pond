@@ -55,6 +55,8 @@ function touchDown(e){
       initializeOnUp = true
     }
   }
+  
+  // audio
   if (collideBox(pos, {
     x: $canv.width - 25,
     y: 10,
@@ -63,6 +65,39 @@ function touchDown(e){
   })){
     toggleMute()
   }
+  
+  if(!about) {
+    // about
+    if (collideBox(pos, {
+      x: 10,
+      y: 10,
+      width: 40,
+      height: 20
+    })){
+      showAbout()
+    }
+  } else {
+    // zolmeister
+    if (collideBox(pos, {
+      x: 32,
+      y: 10,
+      width: 80,
+      height: 12
+    })){
+      window.open('http://zolmeister.com')
+    }
+    
+    // music attribution
+    if (collideBox(pos, {
+      x: 48,
+      y: 32,
+      width: 48,
+      height: 12
+    })){
+      window.open('https://soundcloud.com/chrissij')
+    }
+  }
+  
 }
 
 $canv.addEventListener('mouseup', touchUp)

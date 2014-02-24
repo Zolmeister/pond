@@ -1,4 +1,6 @@
 var muted = false
+var about = false
+
 popSound = document.createElement('audio')
 popSound.src='assets/drop1.ogg'
 popSound.volume = 0.4
@@ -32,10 +34,32 @@ function playPop() {
 
 function drawSoundControl() {
   if(typeof ctx === 'undefined') return
-  //ctx.fillStyle='#111'
-  //ctx.fillRect($canv.width - 25, 10, 16, 22)
+  ctx.fillStyle = '#111'
+  ctx.fillRect($canv.width - 25, 10, 50, 25)
   if(muted)
     ctx.drawImage(ASSETS.soundOff, $canv.width - 25, 10)
   else
     ctx.drawImage(ASSETS.soundOn, $canv.width - 25, 10)
+  
+  if(GAME.state === 'menu' && about) {
+    ctx.fillStyle = '#111'
+    ctx.fillRect(10, 10, 50, 20)
+    ctx.fillStyle = '#333'
+    ctx.font = 'normal 14px sans'
+    ctx.fillText('By: Zolmeister', 10, 20)
+    ctx.font = 'normal 12px sans'
+    ctx.fillText('Music: Chrissi J', 10, 42)
+  } else if (GAME.state === 'menu') {
+    ctx.fillStyle = '#111'
+    ctx.fillRect(10, 10, 50, 20)
+    ctx.fillStyle = '#333'
+    ctx.font = 'normal 12px sans'
+    ctx.fillText('About', 10, 20)
+  }
+  
+}
+
+function showAbout() {
+  about = true
+  drawSoundControl()
 }

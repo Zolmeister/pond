@@ -1,5 +1,5 @@
 CACHE MANIFEST
-#build 1.2.1
+#build 1.2.2
 
 CACHE:
 index.html
@@ -8,7 +8,6 @@ assets/logo.png
 assets/drop1.ogg
 assets/bg.ogg
 assets/enter.png
-assets/Leckerli%20One.ttf
 assets/logo-small.png
 assets/sound-off.png
 assets/sound-on.png
