@@ -3,16 +3,23 @@ popSound = document.createElement('audio')
 popSound.src='assets/drop1.ogg'
 popSound.volume = 0.4
 
+bgSound = document.createElement('audio')
+bgSound.src='assets/bg.ogg'
+bgSound.volume = 0.6
+bgSound.play()
+
 if(localStorage.muted === 'true') toggleMute()
 
 function toggleMute(){
   if(!muted) {
     popSound.volume = 0
+    bgSound.volume = 0
     muted = true
     localStorage.muted = 'true'
     drawSoundControl()
   } else {
-    popSound.volume = 0.6
+    popSound.volume = 0.4
+    bgSound.volume = 0.6
     muted = false
     localStorage.muted = 'false'
     drawSoundControl()
