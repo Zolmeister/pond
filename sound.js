@@ -7,6 +7,7 @@ popSound.volume = 0.4
 
 bgSound = document.createElement('audio')
 bgSound.src='assets/bg.ogg'
+bgSound.loop = true
 bgSound.volume = 0.6
 bgSound.play()
 
