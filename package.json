@@ -4,11 +4,12 @@
   "description": "A narrow fellow in the Pond",
   "main": "test-server.js",
   "dependencies": {
-    "express": "~3.4.0"
+    "express": "^4.14.0"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":  "node test-server.js"
   },
   "repository": {
     "type": "git",
