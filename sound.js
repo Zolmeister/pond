@@ -9,6 +9,9 @@ bgSound = document.createElement('audio')
 bgSound.src='assets/bg.ogg'
 bgSound.loop = true
 bgSound.volume = 0.6
+bgSound.addEventListener('canplaythrough', function() {
+  bgSound.play()
+})
 bgSound.play()
 
 if(localStorage.muted === 'true') toggleMute()
@@ -25,6 +28,7 @@ function toggleMute(){
     bgSound.volume = 0.6
     muted = false
     localStorage.muted = 'false'
+    bgSound.play()
     drawSoundControl()
   }
 }
@@ -41,7 +45,7 @@ function drawSoundControl() {
     ctx.drawImage(ASSETS.soundOff, $canv.width - 25, 10)
   else
     ctx.drawImage(ASSETS.soundOn, $canv.width - 25, 10)
-  
+
   if(GAME.state === 'menu' && about) {
     ctx.fillStyle = '#111'
     ctx.fillRect(10, 10, 50, 20)
@@ -57,7 +61,7 @@ function drawSoundControl() {
     ctx.font = 'normal 12px sans'
     ctx.fillText('About', 10, 20)
   }
-  
+
 }
 
 function showAbout() {
