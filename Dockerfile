@@ -1,7 +1,7 @@
 FROM node:6.6.0
 
-# npm-shrinkwrap.json, package.json
-COPY *.json /tmp/
+COPY npm-shrinkwrap.json /tmp/
+COPY package.json /tmp/
 RUN mkdir -p /opt/app && \
     cd /opt/app && \
     cp /tmp/npm-shrinkwrap.json . && \
